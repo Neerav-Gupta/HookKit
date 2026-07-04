@@ -1,17 +1,31 @@
 # @hookkit-dev/relay
 
-OPTIONAL, USER-self-hosted relay — HookKit never operates one. Gives you a
-stable public URL that forwards to your machine over an OUTBOUND WebSocket
-(no inbound ports on your laptop).
+The relay is an optional, user-self-hosted public entry point for local
+webhook development. HookKit does not operate one for you.
+
+## Install
 
 ```bash
-# on your host
-docker build -t hookkit-relay packages/relay   # after: pnpm --filter @hookkit-dev/relay build
-docker run -p 8787:8787 -e RELAY_TOKENS=<long-random-token> hookkit-relay
+npm install @hookkit-dev/relay
+```
 
-# on your dev machine
+## How it works
+
+The relay gives you a public URL, receives provider requests, and forwards the
+exact bytes to your local machine over an outbound WebSocket.
+
+## Run it
+
+```bash
+docker build -t hookkit-relay packages/relay
+docker run -p 8787:8787 -e RELAY_TOKENS=<long-random-token> hookkit-relay
+```
+
+Then connect your machine:
+
+```bash
 hookkit-relay-client wss://relay.example.com <long-random-token> http://127.0.0.1:3000
 ```
 
-Providers POST to `https://relay.example.com/hook/<token>/<path>`; bytes are
-relayed exactly and your local handler's response is returned to the provider.
+Providers can then POST to the relay URL and your local handler receives the
+request.

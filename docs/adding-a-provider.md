@@ -1,78 +1,53 @@
 # Adding a provider
 
-Everything a new provider needs lives in TWO packages: a fixture in
-`@hookkit-dev/fixtures` and an adapter in `@hookkit-dev/core`. The SDK, CLI,
-and inspector pick it up automatically from the registry — never duplicate
-signing logic into a surface package (CLAUDE.md invariant).
+If you want HookKit to support a new webhook provider, the implementation lives
+in the core package and the fixture package. The rest of HookKit reads from that
+shared provider registry.
 
-Worked example: adding a fictional provider `acme` with event `order.shipped`.
+Worked example: adding a fictional provider `acme` with event
+`order.shipped`.
 
-## 1. Scaffold the fixture
+## 1. Add the synthetic fixture
+
+Create a fixture file for the event and register it in the fixture manifest.
+Use synthetic data only.
 
 ```bash
-pnpm --filter @hookkit-dev/cli build
-node packages/cli/dist/cli.js fixtures add acme order.shipped --api-version v1
+hookkit fixtures add acme order.shipped --api-version v1
 ```
 
-This creates `packages/fixtures/fixtures/acme/v1/order.shipped.json` and
-registers `acme/order.shipped` in `packages/fixtures/manifest.json`. Fill the
-file with a **synthetic** payload matching the provider's documented shape —
-no real PII, tokens, or secrets, ever.
+That creates a new payload file under `packages/fixtures/fixtures/acme/v1/` and
+adds the manifest entry for `acme/order.shipped`.
 
-## 2. Write the adapter (test-first)
+## 2. Implement the provider in `@hookkit-dev/core`
 
-Create `packages/core/src/adapters/acme.golden.test.ts` FIRST. The golden test
-generates an event and verifies it with the provider's **official**
-verification library (added as a devDependency of core, used only as the
-oracle). See `stripe.golden.test.ts` for the pattern. If the provider ships no
-verifier library, implement the documented recipe independently in the test
-(see the Slack/Shopify golden tests).
+Write the adapter in core and add a golden test first. The golden test should
+prove that HookKit-generated signatures verify with the provider's official
+verification library, when one exists.
 
-Then create `packages/core/src/adapters/acme.ts` implementing `ProviderAdapter`
-from `../types.js`:
+The adapter should define:
 
-- `sign()` — compute the exact headers the real provider attaches to the raw
-  bytes. Use ONLY the helpers in `../signature.js` (`node:crypto` — no
-  third-party crypto).
-- `verify()` — recompute and compare in constant time (`safeEqual`); enforce
-  `toleranceSec` (default 300) if the scheme is timestamped.
-- `headersFor()` (optional) — event-dependent realism headers such as
-  GitHub's `X-GitHub-Event`.
-- `events` — one `EventDescriptor` per event: `fixtureId` (`acme/order.shipped`),
-  `apiVersions`, and a JSON `schema` (drives the fixture CI gate).
-- `retryPolicy` — the provider's documented redelivery behavior.
+- `sign()` to produce the provider's real headers from the exact raw bytes,
+- `verify()` to validate those headers in constant time,
+- `events` to map event names to fixture ids and schemas,
+- `retryPolicy` to describe the provider's documented retry behavior.
 
-NEVER re-serialize a payload before signing: `sign()` receives the raw bytes
-and must use them as-is.
+Do not re-serialize the payload before signing. The raw request body is the
+source of truth.
 
-## 3. Register it
+## 3. Register the provider
 
-In `packages/core/src/registry.ts`:
+Add the adapter to the core registry and export it from the core entry point.
+Once that is done, the SDK and CLI can use the provider by name.
 
-```ts
-import { acme } from "./adapters/acme.js";
-registry.register(acme);
-```
+## 4. Verify the provider end to end
 
-Export it from `packages/core/src/index.ts`, and add the id to
-`EXPECTED_PROVIDERS` in `packages/core/src/conformance.test.ts`.
-
-## 4. Prove it
+Run the core tests and the full workspace verification:
 
 ```bash
 pnpm --filter @hookkit-dev/core test
+pnpm verify
 ```
 
-This runs, for your adapter, automatically:
-
-- your golden test against the official verifier (provider-accurate signing),
-- the shared conformance suite (`conformance.ts`): metadata, fixture
-  resolution, sign→verify round-trip per event, tamper rejection, wrong-secret
-  rejection, missing-header rejection, stale-timestamp rejection, determinism,
-- the fixture-schema CI gate (`fixtures.schema.test.ts`): every fixture must
-  satisfy your event schema — a malformed fixture fails CI.
-
-A provider is DONE when `pnpm verify` is green with all of the above. Optional
-polish: add the provider to the SDK convenience methods
-(`packages/sdk/src/index.ts`) — `hookkit.provider("acme", …)` already works
-without it.
+When those pass, the provider is ready for users. You can optionally add a
+shortcut on the SDK surface, but `hookkit.provider("acme", …)` already works.

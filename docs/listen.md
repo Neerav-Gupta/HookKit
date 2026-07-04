@@ -1,37 +1,29 @@
 # Receiving real provider events: `hookkit listen`
 
-HookKit never operates a hosted relay (see CLAUDE.md invariants). To receive a
-*real* provider event on your machine you bring your own public path:
+Use `hookkit listen` when you want Stripe, GitHub, Shopify, or another provider
+to send real webhooks to your local machine.
 
-## Option A — bring-your-own tunnel (default)
+HookKit does not run a hosted relay. You either bring your own tunnel or run
+the optional self-hosted relay package.
+
+## Option 1: use your own tunnel
 
 ```bash
-# your app runs on :3000; cloudflared is installed and on your PATH
-export HOOKKIT_STRIPE_SECRET=whsec_…       # enables live verification logging
+export HOOKKIT_STRIPE_SECRET=whsec_...
 hookkit listen 3000 --tunnel cloudflared --path /webhooks/stripe
 ```
 
-`hookkit listen` starts a local capture server, shells out to
-`cloudflared tunnel --url http://127.0.0.1:<capture-port>`, and prints the
-public `https://….trycloudflare.com` URL. Point the provider's webhook
-settings at that URL; every delivery is logged (provider guess + signature
-verdict) and forwarded byte-for-byte to `http://127.0.0.1:3000/webhooks/stripe`.
+`hookkit listen` starts a local capture server and prints a public URL. Point
+your provider webhook settings at that URL, and HookKit forwards each delivery
+byte-for-byte to your local app.
 
-`--tunnel ngrok` and `--tunnel frpc` work the same way with your own binaries.
+You can also use `ngrok` or `frpc` if those are already installed on your
+machine.
 
-## Manual acceptance check (M5)
+## Option 2: run the optional relay
 
-1. `pnpm --filter example-express-stripe start` (listens on :3000)
-2. `hookkit listen 3000 --tunnel cloudflared --path /webhooks/stripe`
-3. Copy the printed public URL, then from ANY external machine:
-   `curl -X POST https://<public-url>/ -d '{"probe":true}'`
-4. Observe the capture log line and the forwarded request hitting the example
-   app (400 for the unsigned probe — verification middleware is working; a
-   Stripe CLI test event with your real `whsec_…` secret returns 200).
-
-## Option B — self-hosted relay (`@hookkit-dev/relay`)
-
-Deploy the relay image on YOUR host for a stable public URL:
+If you want a stable public URL that you control, deploy the relay package on a
+host you own and connect your machine outbound to it.
 
 ```bash
 pnpm --filter @hookkit-dev/relay build
@@ -39,10 +31,18 @@ docker build -t hookkit-relay packages/relay
 docker run -p 8787:8787 -e RELAY_TOKENS=<long-random-token> hookkit-relay
 ```
 
-On your dev machine, connect outbound (no inbound ports needed):
+Then connect your machine:
 
 ```bash
 hookkit-relay-client wss://relay.example.com <long-random-token> http://127.0.0.1:3000
 ```
 
-Providers then POST to `https://relay.example.com/hook/<token>/webhooks/stripe`.
+Providers then POST to the relay URL, and the relay forwards the exact bytes
+to your local app.
+
+## Quick check
+
+1. Start your app on `http://localhost:3000`.
+2. Run `hookkit listen 3000 --tunnel cloudflared --path /webhooks/stripe`.
+3. Send a test webhook from the provider dashboard.
+4. Confirm the request is captured and forwarded to your app.

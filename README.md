@@ -1,103 +1,102 @@
 # HookKit
 
-**An offline, open-source, all-in-one webhook dev + test kit for JS/TS.**
-Three co-equal surfaces over one shared core: a test-native **SDK**, a dev
-**CLI**, and a local **inspector**.
+HookKit is an offline-first webhook toolkit for JS and TS. It gives you three
+pieces you can use in your own app:
 
-- **Offline-first.** Core, SDK, and CLI work with zero network access. No
-  account, no API keys, no telemetry, no HookKit-operated servers — ever.
-- **Provider-accurate signing.** Every generated event verifies against the
-  provider's *official* verification library (enforced by golden tests).
-- **Raw-body fidelity.** The exact bytes are the source of truth end to end;
-  payloads are never re-serialized before signing or delivery.
+- a test SDK for generating and asserting webhook deliveries,
+- a CLI for triggering, verifying, replaying, and listening for events,
+- a local inspector for capturing and replaying webhook traffic.
 
-Providers out of the box: **Stripe, GitHub, Shopify, Slack, Standard Webhooks.**
+HookKit works with published npm packages under the `@hookkit-dev` scope. The
+CLI binary is `hookkit`.
 
-> npm scope note: packages live under `@hookkit-dev` (the `@hookkit` scope was
-> taken). The CLI binary is still `hookkit`.
+## Install
 
-## 1 — Test SDK (`@hookkit-dev/sdk`)
+Choose the packages you need:
+
+```bash
+npm install @hookkit-dev/sdk @hookkit-dev/adapter-express
+npm install @hookkit-dev/cli
+npm install @hookkit-dev/inspector
+```
+
+Supported providers out of the box: Stripe, GitHub, Shopify, Slack, and
+Standard Webhooks.
+
+## Use in a React app
+
+HookKit does not run in the browser. You use it around the webhook endpoint
+behind your React app, such as a Next.js route or an Express API.
+
+Example with a React app that uses an Express backend:
 
 ```ts
-import "@hookkit-dev/sdk/vitest";           // registers matchers
 import { hookkit } from "@hookkit-dev/sdk";
 import { toTarget } from "@hookkit-dev/adapter-express";
-import { createApp } from "../src/app";
 
-const stripe = hookkit.stripe({ secret: "whsec_test" });
-const target = toTarget(createApp(), "/webhooks/stripe");
+const stripe = hookkit.stripe({ secret: process.env.STRIPE_WEBHOOK_SECRET! });
+const target = toTarget(app, "/webhooks/stripe"); // your Express app instance
 
-it("accepts a valid event", async () => {
-  const res = await stripe.event("checkout.session.completed").sendTo(target);
-  expect(res).toBeAccepted();
-});
-
-it("rejects a tampered signature", async () => {
-  const res = await stripe
-    .event("checkout.session.completed")
-    .tamperSignature()
-    .sendTo(target);
-  expect(res).toHaveRejectedWithStatus(400);
-});
-
-// correctness harness: duplicates, retries, ordering, malformed requests
-const report = await hookkit.harness.idempotency(
-  stripe.event("checkout.session.completed"),
-  target,
-  { times: 3 },
-);
-expect(report.pass).toBe(true);
+const result = await stripe.event("checkout.session.completed").sendTo(target);
+expect(result).toBeAccepted();
 ```
 
-Adapters guarantee raw-body fidelity per framework:
-`@hookkit-dev/adapter-express`, `-fastify`, `-next`, `-hono`, `-nest`.
-
-## 2 — CLI (`@hookkit-dev/cli`)
+Use the CLI when you want to work with a local endpoint directly:
 
 ```bash
-hookkit list providers
-hookkit list events stripe
 hookkit trigger stripe checkout.session.completed \
-  --to http://localhost:3000/webhooks/stripe --secret whsec_test \
-  --set data.object.amount_total=4242
-hookkit verify stripe --body @body.json --header "Stripe-Signature: t=…,v1=…" --secret whsec_test
-hookkit replay capture.json --to http://localhost:3000/webhooks/stripe
-hookkit listen 3000 --tunnel cloudflared --path /webhooks/stripe   # real events, YOUR tunnel
-hookkit inspect                                                    # launches the inspector
+  --to http://localhost:3000/webhooks/stripe \
+  --secret whsec_test
+
+hookkit verify github \
+  --body @payload.json \
+  --header "X-Hub-Signature-256: sha256=…" \
+  --secret github_test
 ```
 
-Config resolution: flags → `hookkit.config.{js,mjs,json,ts}` → env
-(`HOOKKIT_STRIPE_SECRET`, `HOOKKIT_SECRET`, `HOOKKIT_TARGET`). Secrets are
-never logged or written to disk.
+## Inspector
 
-## 3 — Inspector (`@hookkit-dev/inspector`)
+Run the inspector when you want to capture, inspect, and replay webhook
+requests locally:
 
 ```bash
-hookkit inspect          # http://127.0.0.1:4000
+hookkit inspect
 ```
 
-Create endpoints, point webhooks at `/in/<slug>`, and get: live capture (SSE),
-pretty-printed JSON, provider guess + signature badge (set
-`HOOKKIT_<PROVIDER>_SECRET` for live verification), and exact-bytes
-replay/forward to any local URL. Binds `127.0.0.1` by default; non-loopback
-hosts require basic auth. Self-hostable via `packages/inspector/Dockerfile`.
+The inspector listens on `127.0.0.1` by default. If you bind it to a public
+host, basic auth is required.
 
-## Receiving real provider events
+## Receive real provider events locally
 
-No hosted relay — bring your own tunnel (`hookkit listen … --tunnel
-cloudflared|ngrok|frpc`) or deploy the optional, user-self-hosted
-[`@hookkit-dev/relay`](packages/relay/README.md). See [docs/listen.md](docs/listen.md).
-
-## Development
+Use `hookkit listen` with your own tunnel, or deploy the optional
+user-self-hosted relay package.
 
 ```bash
-pnpm install
-pnpm verify        # biome + typecheck + vitest + build — must be green
+hookkit listen 3000 --tunnel cloudflared --path /webhooks/stripe
 ```
 
-Monorepo layout: `packages/{core,fixtures,sdk,cli,inspector,relay,adapter-*}`,
-`examples/{express-stripe,fastify-shopify,next-github,hono-slack}`.
-Adding a provider: [docs/adding-a-provider.md](docs/adding-a-provider.md).
+See [docs/listen.md](docs/listen.md) for the full flow.
+
+## Package overview
+
+- `@hookkit-dev/sdk` for tests and matchers
+- `@hookkit-dev/cli` for command-line workflows
+- `@hookkit-dev/inspector` for the local UI and capture server
+- `@hookkit-dev/adapter-*` for framework integration
+- `@hookkit-dev/core` for signing, generation, and dispatching
+- `@hookkit-dev/fixtures` for synthetic payloads
+- `@hookkit-dev/relay` for the optional self-hosted relay
+
+## Publishing
+
+If you are maintaining this repo, build first and then publish the packages in
+order:
+
+```bash
+pnpm build
+pnpm publish:packages:dry-run
+pnpm publish:packages
+```
 
 ## License
 

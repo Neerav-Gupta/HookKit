@@ -1,14 +1,31 @@
 # @hookkit-dev/inspector
 
-Local webhook inspector: Hono capture server + better-sqlite3 + React UI.
-Capture endpoints (`POST /in/<slug>`), live SSE updates, provider guess +
-signature badge, pretty JSON, and exact-bytes replay/forward.
+The inspector gives you a local UI for webhook traffic. It captures incoming
+requests, shows the raw payload and headers, guesses the provider, and lets you
+replay or forward the exact bytes.
+
+## Install
 
 ```bash
-hookkit inspect        # http://127.0.0.1:4000
+npm install @hookkit-dev/inspector
 ```
 
-Binds `127.0.0.1` by default. Non-loopback binds REQUIRE basic auth
-(`--auth user:pass` / `HOOKKIT_INSPECTOR_AUTH`). Set
-`HOOKKIT_<PROVIDER>_SECRET` to verify captures live. Docker: see Dockerfile
-(build after `pnpm build`).
+## Start it
+
+```bash
+hookkit inspect
+```
+
+By default it binds to `127.0.0.1` on port `4000`.
+
+## What it does
+
+- captures requests at `POST /in/<slug>`,
+- shows live updates through SSE,
+- verifies signatures when you provide `HOOKKIT_<PROVIDER>_SECRET`,
+- replays or forwards the exact raw bytes to another local URL.
+
+## Public bind
+
+If you bind the inspector to a non-loopback host, basic auth is required.
+See the Dockerfile for running it in a container.

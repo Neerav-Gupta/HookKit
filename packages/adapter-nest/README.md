@@ -1,7 +1,22 @@
 # @hookkit-dev/adapter-nest
 
-HookKit adapter for nest: raw-body capture (verify signatures against the
-EXACT received bytes, never a re-serialized parse) and `toTarget(app, path?)`
-— a network-free delivery target for the SDK's `sendTo()`.
+HookKit's Nest adapter gives you raw-body capture and a test target for a Nest
+application.
 
-See the monorepo root README and `examples/` for a wired-up handler.
+## Install
+
+```bash
+npm install @hookkit-dev/adapter-nest @hookkit-dev/sdk
+```
+
+## Use it in tests
+
+```ts
+import { hookkit } from "@hookkit-dev/sdk";
+import { toTarget } from "@hookkit-dev/adapter-nest";
+
+const target = toTarget(app, "/webhooks/stripe");
+```
+
+The adapter keeps the raw request body intact so signature checks use the exact
+bytes your app received.

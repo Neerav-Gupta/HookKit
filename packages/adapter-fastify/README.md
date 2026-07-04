@@ -1,7 +1,22 @@
 # @hookkit-dev/adapter-fastify
 
-HookKit adapter for fastify: raw-body capture (verify signatures against the
-EXACT received bytes, never a re-serialized parse) and `toTarget(app, path?)`
-— a network-free delivery target for the SDK's `sendTo()`.
+HookKit's Fastify adapter gives you raw-body capture and a test target for a
+Fastify app.
 
-See the monorepo root README and `examples/` for a wired-up handler.
+## Install
+
+```bash
+npm install @hookkit-dev/adapter-fastify @hookkit-dev/sdk
+```
+
+## Use it in tests
+
+```ts
+import { hookkit } from "@hookkit-dev/sdk";
+import { toTarget } from "@hookkit-dev/adapter-fastify";
+
+const target = toTarget(app, "/webhooks/stripe");
+```
+
+The adapter keeps the raw request body intact so signature checks use the exact
+bytes your app received.

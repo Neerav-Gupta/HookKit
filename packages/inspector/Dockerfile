@@ -11,7 +11,10 @@ FROM node:20-alpine
 WORKDIR /app
 
 # The server bundle externalizes only its runtime deps; install just those.
-RUN npm install --no-save --loglevel=error better-sqlite3@^12 hono@^4 @hono/node-server@^1
+# better-sqlite3 needs a native build toolchain on Alpine.
+RUN apk add --no-cache --virtual .build-deps python3 make g++ \
+	&& npm install --no-save --loglevel=error better-sqlite3@^12 hono@^4 @hono/node-server@^1 \
+	&& apk del .build-deps
 
 COPY dist/ ./dist/
 COPY dist-ui/ ./dist-ui/

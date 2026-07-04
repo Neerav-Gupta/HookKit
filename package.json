@@ -11,6 +11,8 @@
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "vitest run",
 		"build": "pnpm -r build",
+		"publish:packages": "node scripts/publish-packages.mjs",
+		"publish:packages:dry-run": "node scripts/publish-packages.mjs --dry-run",
 		"hookkit": "node packages/cli/dist/cli.js"
 	},
 	"packageManager": "pnpm@11.9.0",

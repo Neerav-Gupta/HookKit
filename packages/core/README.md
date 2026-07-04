@@ -1,22 +1,33 @@
 # @hookkit-dev/core
 
-The single source of provider truth: `ProviderRegistry`, signature engine
-(`node:crypto` only), `generate()` (fixture → signed event, raw-body
-faithful), `dispatch()` (URL or FrameworkApp), the correctness `harness`, and
-the shared conformance suite every adapter must pass.
+The core package holds HookKit's provider registry, signing logic, event
+generation, dispatching, and harness utilities.
 
-```ts
-import { generate, dispatch, registry, harness } from "@hookkit-dev/core";
+## Install
 
-const evt = generate("stripe", "checkout.session.completed", {
-  secret: "whsec_test",
-  timestamp: 1710000000,          // pin for determinism
-  overrides: { data: { object: { amount_total: 4242 } } },
-});
-await dispatch(evt, "http://localhost:3000/webhooks/stripe");
-
-registry.get("stripe").verify({ rawBody, headers, secret }); // { valid, reason? }
+```bash
+npm install @hookkit-dev/core
 ```
 
-Offline-first: no network in any default path. Every provider is golden-tested
-against its official verification library. See `docs/adding-a-provider.md`.
+## What it provides
+
+- provider registration and lookup,
+- raw-body-safe event generation,
+- provider signature creation and verification,
+- dispatch to URLs or framework apps,
+- conformance and harness helpers.
+
+## Example
+
+```ts
+import { generate, dispatch, registry } from "@hookkit-dev/core";
+
+const event = generate("stripe", "checkout.session.completed", {
+  secret: "whsec_test",
+  timestamp: 1710000000,
+});
+
+await dispatch(event, "http://localhost:3000/webhooks/stripe");
+
+const provider = registry.get("stripe");
+```

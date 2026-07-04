@@ -1,7 +1,23 @@
 # @hookkit-dev/adapter-next
 
-HookKit adapter for next: raw-body capture (verify signatures against the
-EXACT received bytes, never a re-serialized parse) and `toTarget(app, path?)`
-— a network-free delivery target for the SDK's `sendTo()`.
+HookKit's Next.js adapter gives you raw-body capture and a test target for App
+Router route handlers.
 
-See the monorepo root README and `examples/` for a wired-up handler.
+## Install
+
+```bash
+npm install @hookkit-dev/adapter-next @hookkit-dev/sdk
+```
+
+## Use it in tests
+
+```ts
+import { hookkit } from "@hookkit-dev/sdk";
+import { toTarget } from "@hookkit-dev/adapter-next";
+import { POST } from "./route";
+
+const target = toTarget(POST, "/api/webhooks/stripe");
+```
+
+The adapter keeps the raw request body intact so signature checks use the exact
+bytes your app received.
