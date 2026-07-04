@@ -41,6 +41,11 @@ export function generate(
 
 	const headers: Record<string, string> = {
 		"Content-Type": adapter.contentType,
+		...(adapter.headersFor?.({
+			eventType,
+			rawBody,
+			apiVersion: fixture.apiVersion,
+		}) ?? {}),
 		...adapter.sign({
 			rawBody,
 			secret: opts.secret,

@@ -1,0 +1,55 @@
+{
+  "ref": "refs/heads/main",
+  "before": "0000000000000000000000000000000000000000",
+  "after": "1111111111111111111111111111111111111111",
+  "repository": {
+    "id": 100000001,
+    "name": "demo-repo",
+    "full_name": "octocat-test/demo-repo",
+    "private": false,
+    "owner": {
+      "login": "octocat-test",
+      "id": 100000000
+    },
+    "default_branch": "main"
+  },
+  "pusher": {
+    "name": "octocat-test",
+    "email": "octocat-test@example.com"
+  },
+  "sender": {
+    "login": "octocat-test",
+    "id": 100000000,
+    "type": "User"
+  },
+  "created": false,
+  "deleted": false,
+  "forced": false,
+  "compare": "https://github.example.com/octocat-test/demo-repo/compare/000000000000...111111111111",
+  "commits": [
+    {
+      "id": "1111111111111111111111111111111111111111",
+      "message": "test: synthetic commit",
+      "timestamp": "2025-04-10T12:00:00Z",
+      "author": {
+        "name": "Octocat Test",
+        "email": "octocat-test@example.com"
+      },
+      "added": ["README.md"],
+      "removed": [],
+      "modified": []
+    }
+  ],
+  "head_commit": {
+    "id": "1111111111111111111111111111111111111111",
+    "message": "test: synthetic commit",
+    "timestamp": "2025-04-10T12:00:00Z",
+    "author": {
+      "name": "Octocat Test",
+      "email": "octocat-test@example.com"
+    },
+    "added": ["README.md"],
+    "removed": [],
+    "modified": []
+  }
+}

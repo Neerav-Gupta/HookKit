@@ -1,5 +1,17 @@
 {
 	"stripe/checkout.session.completed": {
 		"2025-04-10": "fixtures/stripe/2025-04-10/checkout.session.completed.json"
+	},
+	"github/push": {
+		"2022-11-28": "fixtures/github/2022-11-28/push.json"
+	},
+	"shopify/orders/create": {
+		"2025-04": "fixtures/shopify/2025-04/orders-create.json"
+	},
+	"slack/app_mention": {
+		"v1": "fixtures/slack/v1/app_mention.json"
+	},
+	"standard-webhooks/invoice.paid": {
+		"v1": "fixtures/standard-webhooks/v1/invoice-paid.json"
 	}
 }

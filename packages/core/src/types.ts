@@ -19,6 +19,17 @@ export interface ProviderAdapter {
 		toleranceSec?: number; // default 300
 	}): { valid: boolean; reason?: string };
 
+	/**
+	 * Optional provider-realism headers that depend on the event rather than
+	 * the body/secret (e.g. GitHub's X-GitHub-Event, Shopify's X-Shopify-Topic).
+	 * Merged into generated events alongside sign()'s output.
+	 */
+	headersFor?(input: {
+		eventType: string;
+		rawBody: Buffer;
+		apiVersion?: string;
+	}): Record<string, string>;
+
 	events: Record<string, EventDescriptor>;
 	retryPolicy: RetrySchedule;
 }

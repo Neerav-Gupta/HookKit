@@ -1,4 +1,10 @@
+export { github } from "./adapters/github.js";
+export { shopify } from "./adapters/shopify.js";
+export { slack } from "./adapters/slack.js";
+export { standardWebhooks } from "./adapters/standard-webhooks.js";
 export { stripe } from "./adapters/stripe.js";
+export type { ConformanceCheck } from "./conformance.js";
+export { conformanceChecks } from "./conformance.js";
 export { dispatch } from "./dispatch.js";
 export { generate } from "./generate.js";
 export { deepMerge, setPath } from "./merge.js";

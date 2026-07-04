@@ -1,0 +1,23 @@
+{
+  "token": "synthetic-verification-token",
+  "team_id": "T0000000000",
+  "api_app_id": "A0000000000",
+  "event": {
+    "type": "app_mention",
+    "user": "U0000000001",
+    "text": "<@U0000000002> hello from a synthetic fixture",
+    "ts": "1710000000.000100",
+    "channel": "C0000000000",
+    "event_ts": "1710000000.000100"
+  },
+  "type": "event_callback",
+  "event_id": "Ev0000000000",
+  "event_time": 1710000000,
+  "authorizations": [
+    {
+      "team_id": "T0000000000",
+      "user_id": "U0000000002",
+      "is_bot": true
+    }
+  ]
+}

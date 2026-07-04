@@ -69,6 +69,27 @@ export const stripe: ProviderAdapter = {
 		"checkout.session.completed": {
 			fixtureId: "stripe/checkout.session.completed",
 			apiVersions: ["2025-04-10"],
+			schema: {
+				type: "object",
+				required: ["id", "object", "api_version", "created", "type", "data"],
+				properties: {
+					id: { type: "string", pattern: "^evt_" },
+					object: { const: "event" },
+					api_version: { type: "string" },
+					created: { type: "integer" },
+					type: { const: "checkout.session.completed" },
+					data: {
+						type: "object",
+						required: ["object"],
+						properties: {
+							object: {
+								type: "object",
+								required: ["id", "object", "status"],
+							},
+						},
+					},
+				},
+			},
 		},
 	},
 

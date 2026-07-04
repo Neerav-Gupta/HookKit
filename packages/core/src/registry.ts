@@ -1,3 +1,7 @@
+import { github } from "./adapters/github.js";
+import { shopify } from "./adapters/shopify.js";
+import { slack } from "./adapters/slack.js";
+import { standardWebhooks } from "./adapters/standard-webhooks.js";
 import { stripe } from "./adapters/stripe.js";
 import type { ProviderAdapter } from "./types.js";
 
@@ -32,3 +36,7 @@ export class ProviderRegistry {
 /** The default registry with every built-in provider pre-registered. */
 export const registry = new ProviderRegistry();
 registry.register(stripe);
+registry.register(github);
+registry.register(shopify);
+registry.register(slack);
+registry.register(standardWebhooks);
