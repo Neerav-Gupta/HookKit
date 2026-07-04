@@ -1,0 +1,21 @@
+{
+	"name": "example-express-stripe",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"license": "MIT",
+	"scripts": {
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run",
+		"start": "node --experimental-strip-types src/server.ts"
+	},
+	"dependencies": {
+		"@hookkit-dev/adapter-express": "workspace:*",
+		"express": "^5.1.0",
+		"stripe": "^18.0.0"
+	},
+	"devDependencies": {
+		"@hookkit-dev/sdk": "workspace:*",
+		"@types/express": "^5.0.0"
+	}
+}

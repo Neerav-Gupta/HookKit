@@ -1,0 +1,18 @@
+{
+	"name": "example-fastify-shopify",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"license": "MIT",
+	"scripts": {
+		"typecheck": "tsc --noEmit",
+		"test": "vitest run"
+	},
+	"dependencies": {
+		"@hookkit-dev/adapter-fastify": "workspace:*",
+		"fastify": "^5.0.0"
+	},
+	"devDependencies": {
+		"@hookkit-dev/sdk": "workspace:*"
+	}
+}

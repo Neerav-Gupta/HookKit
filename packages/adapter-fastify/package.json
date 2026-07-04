@@ -1,0 +1,42 @@
+{
+	"name": "@hookkit-dev/adapter-fastify",
+	"version": "0.0.1",
+	"description": "Fastify adapter for HookKit: raw-body capture + inject-based delivery target",
+	"license": "MIT",
+	"type": "module",
+	"main": "./src/index.ts",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"files": [
+		"dist"
+	],
+	"publishConfig": {
+		"main": "./dist/index.cjs",
+		"module": "./dist/index.js",
+		"types": "./dist/index.d.ts",
+		"exports": {
+			".": {
+				"types": "./dist/index.d.ts",
+				"import": "./dist/index.js",
+				"require": "./dist/index.cjs"
+			}
+		}
+	},
+	"scripts": {
+		"typecheck": "tsc --noEmit",
+		"build": "tsup"
+	},
+	"dependencies": {
+		"@hookkit-dev/core": "workspace:*"
+	},
+	"peerDependencies": {
+		"fastify": ">=4"
+	},
+	"devDependencies": {
+		"fastify": "^5.0.0"
+	},
+	"engines": {
+		"node": ">=20"
+	}
+}

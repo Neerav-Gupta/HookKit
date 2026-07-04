@@ -1,0 +1,51 @@
+{
+	"name": "@hookkit-dev/sdk",
+	"version": "0.0.1",
+	"description": "Test-native SDK for HookKit: provider builders, delivery, and test matchers",
+	"license": "MIT",
+	"type": "module",
+	"main": "./src/index.ts",
+	"exports": {
+		".": "./src/index.ts",
+		"./vitest": "./src/vitest.ts"
+	},
+	"files": [
+		"dist"
+	],
+	"publishConfig": {
+		"main": "./dist/index.cjs",
+		"module": "./dist/index.js",
+		"types": "./dist/index.d.ts",
+		"exports": {
+			".": {
+				"types": "./dist/index.d.ts",
+				"import": "./dist/index.js",
+				"require": "./dist/index.cjs"
+			},
+			"./vitest": {
+				"types": "./dist/vitest.d.ts",
+				"import": "./dist/vitest.js",
+				"require": "./dist/vitest.cjs"
+			}
+		}
+	},
+	"scripts": {
+		"typecheck": "tsc --noEmit",
+		"build": "tsup",
+		"test": "vitest run"
+	},
+	"dependencies": {
+		"@hookkit-dev/core": "workspace:*"
+	},
+	"peerDependencies": {
+		"vitest": ">=1"
+	},
+	"peerDependenciesMeta": {
+		"vitest": {
+			"optional": true
+		}
+	},
+	"engines": {
+		"node": ">=20"
+	}
+}

@@ -1,0 +1,36 @@
+{
+	"name": "@hookkit-dev/adapter-next",
+	"version": "0.0.1",
+	"description": "Next.js (App Router) adapter for HookKit: raw-body helper + route-handler delivery target",
+	"license": "MIT",
+	"type": "module",
+	"main": "./src/index.ts",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"files": [
+		"dist"
+	],
+	"publishConfig": {
+		"main": "./dist/index.cjs",
+		"module": "./dist/index.js",
+		"types": "./dist/index.d.ts",
+		"exports": {
+			".": {
+				"types": "./dist/index.d.ts",
+				"import": "./dist/index.js",
+				"require": "./dist/index.cjs"
+			}
+		}
+	},
+	"scripts": {
+		"typecheck": "tsc --noEmit",
+		"build": "tsup"
+	},
+	"dependencies": {
+		"@hookkit-dev/core": "workspace:*"
+	},
+	"engines": {
+		"node": ">=20"
+	}
+}

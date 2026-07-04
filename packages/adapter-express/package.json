@@ -1,0 +1,36 @@
+{
+	"name": "@hookkit-dev/adapter-express",
+	"version": "0.0.1",
+	"description": "Express adapter for HookKit: raw-body capture middleware + network-free delivery target",
+	"license": "MIT",
+	"type": "module",
+	"main": "./src/index.ts",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"files": [
+		"dist"
+	],
+	"publishConfig": {
+		"main": "./dist/index.cjs",
+		"module": "./dist/index.js",
+		"types": "./dist/index.d.ts",
+		"exports": {
+			".": {
+				"types": "./dist/index.d.ts",
+				"import": "./dist/index.js",
+				"require": "./dist/index.cjs"
+			}
+		}
+	},
+	"scripts": {
+		"typecheck": "tsc --noEmit",
+		"build": "tsup"
+	},
+	"dependencies": {
+		"@hookkit-dev/core": "workspace:*"
+	},
+	"engines": {
+		"node": ">=20"
+	}
+}
