@@ -3,6 +3,15 @@
 	"version": "0.0.1",
 	"description": "Bundled, versioned, synthetic webhook payload fixtures for HookKit",
 	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Neerav-Gupta/HookKit.git",
+		"directory": "packages/fixtures"
+	},
+	"homepage": "https://github.com/Neerav-Gupta/HookKit#readme",
+	"bugs": {
+		"url": "https://github.com/Neerav-Gupta/HookKit/issues"
+	},
 	"type": "module",
 	"main": "./src/index.ts",
 	"exports": {

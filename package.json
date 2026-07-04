@@ -3,6 +3,14 @@
 	"private": true,
 	"type": "module",
 	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Neerav-Gupta/HookKit.git"
+	},
+	"homepage": "https://github.com/Neerav-Gupta/HookKit#readme",
+	"bugs": {
+		"url": "https://github.com/Neerav-Gupta/HookKit/issues"
+	},
 	"engines": {
 		"node": ">=20"
 	},

@@ -3,6 +3,15 @@
 	"version": "0.0.1",
 	"description": "HookKit local webhook inspector: capture, inspect, replay, forward — 127.0.0.1 by default",
 	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Neerav-Gupta/HookKit.git",
+		"directory": "packages/inspector"
+	},
+	"homepage": "https://github.com/Neerav-Gupta/HookKit#readme",
+	"bugs": {
+		"url": "https://github.com/Neerav-Gupta/HookKit/issues"
+	},
 	"type": "module",
 	"main": "./dist/index.js",
 	"types": "./src/index.ts",

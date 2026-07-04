@@ -3,6 +3,15 @@
 	"version": "0.0.1",
 	"description": "Next.js (App Router) adapter for HookKit: raw-body helper + route-handler delivery target",
 	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Neerav-Gupta/HookKit.git",
+		"directory": "packages/adapter-next"
+	},
+	"homepage": "https://github.com/Neerav-Gupta/HookKit#readme",
+	"bugs": {
+		"url": "https://github.com/Neerav-Gupta/HookKit/issues"
+	},
 	"type": "module",
 	"main": "./src/index.ts",
 	"exports": {
