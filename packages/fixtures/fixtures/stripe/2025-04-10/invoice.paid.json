@@ -1,0 +1,19 @@
+{
+  "id": "evt_test_0000000002",
+  "object": "event",
+  "api_version": "2025-04-10",
+  "created": 1710000200,
+  "type": "invoice.paid",
+  "data": {
+    "object": {
+      "id": "in_test_0000000000",
+      "object": "invoice",
+      "amount_due": 2000,
+      "amount_paid": 2000,
+      "currency": "usd",
+      "customer": "cus_test_0000000000",
+      "status": "paid",
+      "subscription": "sub_test_0000000000"
+    }
+  }
+}

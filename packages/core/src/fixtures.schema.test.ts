@@ -35,6 +35,16 @@ for (const adapter of registry.list()) {
 	});
 }
 
+it("the gate actually rejects a malformed fixture (negative control)", () => {
+	// If this ever passes validation, the CI gate is broken and fixture drift
+	// would ship silently.
+	const descriptor =
+		registry.get("stripe").events["checkout.session.completed"];
+	const validate = ajv.compile(descriptor?.schema as object);
+	const malformed = { id: "not-an-event-id", object: "banana", data: [] };
+	expect(validate(malformed)).toBe(false);
+});
+
 it("every manifest fixture is claimed by a registered adapter", () => {
 	const claimed = new Set(
 		registry

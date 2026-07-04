@@ -1,0 +1,37 @@
+{
+  "action": "opened",
+  "number": 1,
+  "pull_request": {
+    "id": 200000001,
+    "number": 1,
+    "state": "open",
+    "title": "test: synthetic pull request",
+    "user": {
+      "login": "octocat-test",
+      "id": 100000000
+    },
+    "head": {
+      "ref": "feature-branch",
+      "sha": "2222222222222222222222222222222222222222"
+    },
+    "base": {
+      "ref": "main",
+      "sha": "1111111111111111111111111111111111111111"
+    }
+  },
+  "repository": {
+    "id": 100000001,
+    "name": "demo-repo",
+    "full_name": "octocat-test/demo-repo",
+    "private": false,
+    "owner": {
+      "login": "octocat-test",
+      "id": 100000000
+    }
+  },
+  "sender": {
+    "login": "octocat-test",
+    "id": 100000000,
+    "type": "User"
+  }
+}

@@ -62,6 +62,32 @@ export const shopify: ProviderAdapter = {
 				},
 			},
 		},
+		"orders/updated": {
+			fixtureId: "shopify/orders/updated",
+			apiVersions: [API_VERSION],
+			schema: {
+				type: "object",
+				required: ["id", "created_at", "updated_at", "currency", "total_price"],
+				properties: {
+					id: { type: "integer" },
+					updated_at: { type: "string" },
+					line_items: { type: "array" },
+				},
+			},
+		},
+		"app/uninstalled": {
+			fixtureId: "shopify/app/uninstalled",
+			apiVersions: [API_VERSION],
+			schema: {
+				type: "object",
+				required: ["id", "name", "domain", "myshopify_domain"],
+				properties: {
+					id: { type: "integer" },
+					domain: { type: "string" },
+					myshopify_domain: { type: "string" },
+				},
+			},
+		},
 	},
 
 	// Shopify retries 19 times over ~48 hours with increasing delays.

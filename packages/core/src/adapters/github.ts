@@ -81,6 +81,39 @@ export const github: ProviderAdapter = {
 				},
 			},
 		},
+		pull_request: {
+			fixtureId: "github/pull_request",
+			apiVersions: ["2022-11-28"],
+			schema: {
+				type: "object",
+				required: ["action", "number", "pull_request", "repository", "sender"],
+				properties: {
+					action: { type: "string" },
+					number: { type: "integer" },
+					pull_request: {
+						type: "object",
+						required: ["id", "number", "state", "title", "head", "base"],
+					},
+					repository: { type: "object", required: ["id", "full_name"] },
+				},
+			},
+		},
+		issues: {
+			fixtureId: "github/issues",
+			apiVersions: ["2022-11-28"],
+			schema: {
+				type: "object",
+				required: ["action", "issue", "repository", "sender"],
+				properties: {
+					action: { type: "string" },
+					issue: {
+						type: "object",
+						required: ["id", "number", "state", "title"],
+					},
+					repository: { type: "object", required: ["id", "full_name"] },
+				},
+			},
+		},
 	},
 
 	// GitHub does not automatically retry failed deliveries.

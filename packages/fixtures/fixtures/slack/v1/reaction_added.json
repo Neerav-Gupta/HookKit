@@ -1,0 +1,19 @@
+{
+  "token": "synthetic-verification-token",
+  "team_id": "T0000000000",
+  "api_app_id": "A0000000000",
+  "event": {
+    "type": "reaction_added",
+    "user": "U0000000001",
+    "reaction": "thumbsup",
+    "item": {
+      "type": "message",
+      "channel": "C0000000000",
+      "ts": "1710000001.000200"
+    },
+    "event_ts": "1710000002.000300"
+  },
+  "type": "event_callback",
+  "event_id": "Ev0000000002",
+  "event_time": 1710000002
+}

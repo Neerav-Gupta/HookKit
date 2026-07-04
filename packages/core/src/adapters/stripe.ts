@@ -7,6 +7,31 @@ import {
 } from "../signature.js";
 import type { ProviderAdapter } from "../types.js";
 
+/** Every Stripe event shares the same envelope; only `type` and the inner object vary. */
+function stripeEnvelopeSchema(
+	eventType: string,
+	objectRequired: string[],
+): object {
+	return {
+		type: "object",
+		required: ["id", "object", "api_version", "created", "type", "data"],
+		properties: {
+			id: { type: "string", pattern: "^evt_" },
+			object: { const: "event" },
+			api_version: { type: "string" },
+			created: { type: "integer" },
+			type: { const: eventType },
+			data: {
+				type: "object",
+				required: ["object"],
+				properties: {
+					object: { type: "object", required: objectRequired },
+				},
+			},
+		},
+	};
+}
+
 /**
  * Stripe webhook signing (https://docs.stripe.com/webhooks — signature scheme v1):
  *   signedPayload = `${timestamp}.${rawBody}`
@@ -69,27 +94,31 @@ export const stripe: ProviderAdapter = {
 		"checkout.session.completed": {
 			fixtureId: "stripe/checkout.session.completed",
 			apiVersions: ["2025-04-10"],
-			schema: {
-				type: "object",
-				required: ["id", "object", "api_version", "created", "type", "data"],
-				properties: {
-					id: { type: "string", pattern: "^evt_" },
-					object: { const: "event" },
-					api_version: { type: "string" },
-					created: { type: "integer" },
-					type: { const: "checkout.session.completed" },
-					data: {
-						type: "object",
-						required: ["object"],
-						properties: {
-							object: {
-								type: "object",
-								required: ["id", "object", "status"],
-							},
-						},
-					},
-				},
-			},
+			schema: stripeEnvelopeSchema("checkout.session.completed", [
+				"id",
+				"object",
+				"status",
+			]),
+		},
+		"payment_intent.succeeded": {
+			fixtureId: "stripe/payment_intent.succeeded",
+			apiVersions: ["2025-04-10"],
+			schema: stripeEnvelopeSchema("payment_intent.succeeded", [
+				"id",
+				"object",
+				"status",
+				"amount",
+			]),
+		},
+		"invoice.paid": {
+			fixtureId: "stripe/invoice.paid",
+			apiVersions: ["2025-04-10"],
+			schema: stripeEnvelopeSchema("invoice.paid", [
+				"id",
+				"object",
+				"status",
+				"amount_paid",
+			]),
 		},
 	},
 

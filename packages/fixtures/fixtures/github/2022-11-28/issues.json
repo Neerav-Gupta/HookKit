@@ -1,0 +1,29 @@
+{
+  "action": "opened",
+  "issue": {
+    "id": 300000001,
+    "number": 7,
+    "state": "open",
+    "title": "test: synthetic issue",
+    "body": "A synthetic issue body with no real data.",
+    "user": {
+      "login": "octocat-test",
+      "id": 100000000
+    }
+  },
+  "repository": {
+    "id": 100000001,
+    "name": "demo-repo",
+    "full_name": "octocat-test/demo-repo",
+    "private": false,
+    "owner": {
+      "login": "octocat-test",
+      "id": 100000000
+    }
+  },
+  "sender": {
+    "login": "octocat-test",
+    "id": 100000000,
+    "type": "User"
+  }
+}

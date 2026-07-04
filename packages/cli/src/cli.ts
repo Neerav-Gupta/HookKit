@@ -80,6 +80,27 @@ cli
 
 cli
 	.command(
+		"fixtures <action> <provider> <event>",
+		"Scaffold a new fixture (action: add)",
+	)
+	.option("--api-version <version>", "API version directory for the fixture")
+	.action(async (action: string, provider: string, event: string, options) => {
+		if (action !== "add") {
+			emit({
+				exitCode: 1,
+				output: ["usage: hookkit fixtures add <provider> <event>"],
+			});
+		}
+		const { fixturesAdd } = await import("./fixtures-cmd.js");
+		emit(
+			fixturesAdd(provider, event, {
+				...(options.apiVersion ? { apiVersion: options.apiVersion } : {}),
+			}),
+		);
+	});
+
+cli
+	.command(
 		"listen <port>",
 		"Receive real provider events via YOUR tunnel and forward to localhost",
 	)

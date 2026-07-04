@@ -1,0 +1,18 @@
+{
+  "id": "evt_test_0000000001",
+  "object": "event",
+  "api_version": "2025-04-10",
+  "created": 1710000100,
+  "type": "payment_intent.succeeded",
+  "data": {
+    "object": {
+      "id": "pi_test_0000000000",
+      "object": "payment_intent",
+      "amount": 2000,
+      "amount_received": 2000,
+      "currency": "usd",
+      "customer": "cus_test_0000000000",
+      "status": "succeeded"
+    }
+  }
+}

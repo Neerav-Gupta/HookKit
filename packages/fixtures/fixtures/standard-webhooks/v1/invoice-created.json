@@ -1,0 +1,11 @@
+{
+  "type": "invoice.created",
+  "timestamp": "2025-04-10T11:00:00Z",
+  "data": {
+    "id": "inv_test_0000000000",
+    "amount": 2000,
+    "currency": "usd",
+    "status": "open",
+    "customer_id": "cus_test_0000000000"
+  }
+}

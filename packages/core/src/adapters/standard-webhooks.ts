@@ -16,6 +16,22 @@ import type { ProviderAdapter } from "../types.js";
  * The header may hold a space-separated list of signatures.
  */
 
+/** Spec-style envelope: type + timestamp + typed data object. */
+function standardEnvelopeSchema(
+	eventType: string,
+	dataRequired: string[],
+): object {
+	return {
+		type: "object",
+		required: ["type", "timestamp", "data"],
+		properties: {
+			type: { const: eventType },
+			timestamp: { type: "string" },
+			data: { type: "object", required: dataRequired },
+		},
+	};
+}
+
 function keyBytes(secret: string): Buffer {
 	const encoded = secret.startsWith("whsec_") ? secret.slice(6) : secret;
 	return Buffer.from(encoded, "base64");
@@ -87,18 +103,31 @@ export const standardWebhooks: ProviderAdapter = {
 		"invoice.paid": {
 			fixtureId: "standard-webhooks/invoice.paid",
 			apiVersions: ["v1"],
-			schema: {
-				type: "object",
-				required: ["type", "timestamp", "data"],
-				properties: {
-					type: { const: "invoice.paid" },
-					timestamp: { type: "string" },
-					data: {
-						type: "object",
-						required: ["id", "amount", "currency", "status"],
-					},
-				},
-			},
+			schema: standardEnvelopeSchema("invoice.paid", [
+				"id",
+				"amount",
+				"currency",
+				"status",
+			]),
+		},
+		"invoice.created": {
+			fixtureId: "standard-webhooks/invoice.created",
+			apiVersions: ["v1"],
+			schema: standardEnvelopeSchema("invoice.created", [
+				"id",
+				"amount",
+				"currency",
+				"status",
+			]),
+		},
+		"customer.created": {
+			fixtureId: "standard-webhooks/customer.created",
+			apiVersions: ["v1"],
+			schema: standardEnvelopeSchema("customer.created", [
+				"id",
+				"email",
+				"name",
+			]),
 		},
 	},
 

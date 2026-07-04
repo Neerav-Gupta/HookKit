@@ -1,0 +1,17 @@
+{
+  "token": "synthetic-verification-token",
+  "team_id": "T0000000000",
+  "api_app_id": "A0000000000",
+  "event": {
+    "type": "message",
+    "user": "U0000000001",
+    "text": "a synthetic message fixture",
+    "ts": "1710000001.000200",
+    "channel": "C0000000000",
+    "event_ts": "1710000001.000200",
+    "channel_type": "channel"
+  },
+  "type": "event_callback",
+  "event_id": "Ev0000000001",
+  "event_time": 1710000001
+}
