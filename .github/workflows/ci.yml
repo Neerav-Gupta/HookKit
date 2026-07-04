@@ -8,6 +8,8 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    env:
+      CI: true
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -15,7 +17,7 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile --config.confirmModulesPurge=false
       # Offline gate: core/sdk/cli test suites must pass with networking disabled.
       # `unshare -r -n` runs the tests in a network namespace with no interfaces
       # except loopback-less isolation (loopback is added for local-socket tests).
