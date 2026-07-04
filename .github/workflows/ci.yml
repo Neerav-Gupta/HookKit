@@ -24,6 +24,6 @@ jobs:
       - name: Offline tests (core, sdk, cli)
         run: |
           PNPM="$(command -v pnpm)"
-          sudo unshare -n -- sh -c "ip link set lo up; cd \"$GITHUB_WORKSPACE\"; \"$PNPM\" --filter @hookkit-dev/core --filter @hookkit-dev/sdk --filter @hookkit-dev/cli test"
+          sudo -E unshare -n -- sh -c "export CI=true; ip link set lo up; cd \"$GITHUB_WORKSPACE\"; \"$PNPM\" --filter @hookkit-dev/core --filter @hookkit-dev/sdk --filter @hookkit-dev/cli test"
       - name: Full verify (lint + typecheck + test + build)
         run: pnpm verify
