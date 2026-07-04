@@ -1,0 +1,43 @@
+{
+	"name": "@hookkit-dev/relay",
+	"version": "0.0.1",
+	"description": "OPTIONAL user-self-hosted webhook relay: public URL → outbound WebSocket → your machine. HookKit never operates one.",
+	"license": "MIT",
+	"type": "module",
+	"main": "./src/index.ts",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"bin": {
+		"hookkit-relay-server": "./dist/server-cli.js",
+		"hookkit-relay-client": "./dist/client-cli.js"
+	},
+	"files": [
+		"dist",
+		"Dockerfile"
+	],
+	"publishConfig": {
+		"main": "./dist/index.js",
+		"types": "./dist/index.d.ts",
+		"exports": {
+			".": {
+				"types": "./dist/index.d.ts",
+				"import": "./dist/index.js"
+			}
+		}
+	},
+	"scripts": {
+		"typecheck": "tsc --noEmit",
+		"build": "tsup",
+		"test": "vitest run"
+	},
+	"dependencies": {
+		"ws": "^8.18.0"
+	},
+	"devDependencies": {
+		"@types/ws": "^8.5.0"
+	},
+	"engines": {
+		"node": ">=22"
+	}
+}

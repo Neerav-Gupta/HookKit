@@ -79,6 +79,29 @@ cli
 	});
 
 cli
+	.command(
+		"listen <port>",
+		"Receive real provider events via YOUR tunnel and forward to localhost",
+	)
+	.option("--tunnel <kind>", "Tunnel to spawn: cloudflared | ngrok | frpc")
+	.option("--path <path>", "Path on your local handler, e.g. /webhooks/stripe")
+	.option(
+		"--capture-port <port>",
+		"Port for the capture server (default: ephemeral)",
+	)
+	.action(async (port: string, options) => {
+		const { startListen } = await import("./listen.js");
+		await startListen({
+			port: Number(port),
+			...(options.path ? { path: options.path } : {}),
+			...(options.tunnel ? { tunnel: options.tunnel } : {}),
+			...(options.capturePort
+				? { capturePort: Number(options.capturePort) }
+				: {}),
+		});
+	});
+
+cli
 	.command("inspect", "Launch the local webhook inspector UI")
 	.option("--port <port>", "Port to listen on", { default: 4000 })
 	.option("--host <host>", "Host to bind (non-loopback requires --auth)", {

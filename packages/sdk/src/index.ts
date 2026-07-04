@@ -1,4 +1,5 @@
-import { type ProviderClient, providerClient } from "./builder.js";
+import { providerClient } from "./builder.js";
+import { harness } from "./harness.js";
 
 /**
  * The test-native HookKit SDK surface:
@@ -16,6 +17,8 @@ export const hookkit = {
 	slack: (config: { secret: string }) => providerClient("slack", config),
 	standardWebhooks: (config: { secret: string }) =>
 		providerClient("standard-webhooks", config),
+	/** Correctness harness: idempotency, retry, ordering, malformed. */
+	harness,
 };
 
 export type {
@@ -23,6 +26,8 @@ export type {
 	DeliveryTarget,
 	FrameworkApp,
 	GeneratedEvent,
+	HarnessReport,
+	MalformedKind,
 } from "@hookkit-dev/core";
 export {
 	EventBuilder,
@@ -30,4 +35,5 @@ export {
 	type ProviderClient,
 	providerClient,
 } from "./builder.js";
+export { harness } from "./harness.js";
 export { type HookkitMatchers, matchers } from "./matchers.js";

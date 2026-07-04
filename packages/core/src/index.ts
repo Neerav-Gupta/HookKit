@@ -7,9 +7,20 @@ export type { ConformanceCheck } from "./conformance.js";
 export { conformanceChecks } from "./conformance.js";
 export { dispatch } from "./dispatch.js";
 export { generate } from "./generate.js";
+export {
+	type EventFactory,
+	type HarnessReport,
+	harness,
+	idempotency,
+	type MalformedKind,
+	malformed,
+	ordering,
+	retry,
+} from "./harness.js";
 export { deepMerge, setPath } from "./merge.js";
 export { ProviderRegistry, registry } from "./registry.js";
 export {
+	corruptSignature,
 	DEFAULT_TOLERANCE_SEC,
 	getHeader,
 	hmacSha1Hex,

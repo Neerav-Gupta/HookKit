@@ -1,4 +1,5 @@
 import {
+	corruptSignature,
 	type DeliveryResult,
 	type DeliveryTarget,
 	dispatch,
@@ -67,18 +68,6 @@ export class EventBuilder {
 	async sendTo(target: DeliveryTarget): Promise<DeliveryResult> {
 		return dispatch(this.build(), target);
 	}
-}
-
-/** Flip the last alphanumeric character so the MAC no longer matches. */
-function corruptSignature(value: string): string {
-	for (let i = value.length - 1; i >= 0; i--) {
-		const char = value[i] as string;
-		if (/[A-Za-z0-9]/.test(char)) {
-			const replacement = char === "0" ? "1" : "0";
-			return value.slice(0, i) + replacement + value.slice(i + 1);
-		}
-	}
-	return `${value}0`;
 }
 
 export interface ProviderClient {

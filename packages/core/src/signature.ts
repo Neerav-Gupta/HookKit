@@ -45,6 +45,22 @@ export function getHeader(
 	return undefined;
 }
 
+/**
+ * Flip the last alphanumeric character of a signature value so the MAC no
+ * longer matches — used by failure-path testing (SDK tamperSignature, harness
+ * malformed/badSignature).
+ */
+export function corruptSignature(value: string): string {
+	for (let i = value.length - 1; i >= 0; i--) {
+		const char = value[i] as string;
+		if (/[A-Za-z0-9]/.test(char)) {
+			const replacement = char === "0" ? "1" : "0";
+			return value.slice(0, i) + replacement + value.slice(i + 1);
+		}
+	}
+	return `${value}0`;
+}
+
 export const DEFAULT_TOLERANCE_SEC = 300;
 
 /** Shared timestamp-freshness check used by timestamped signature schemes. */
