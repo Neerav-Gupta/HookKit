@@ -1,6 +1,6 @@
 {
 	"name": "@hookkit-dev/relay",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "OPTIONAL user-self-hosted webhook relay: public URL → outbound WebSocket → your machine. HookKit never operates one.",
 	"license": "MIT",
 	"repository": {

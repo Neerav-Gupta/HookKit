@@ -1,6 +1,6 @@
 {
 	"name": "@hookkit-dev/core",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "HookKit core: provider registry, signature engine, event generator, dispatcher, harness",
 	"license": "MIT",
 	"repository": {

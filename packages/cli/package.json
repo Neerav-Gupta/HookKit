@@ -1,6 +1,6 @@
 {
 	"name": "@hookkit-dev/cli",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "HookKit dev CLI: trigger, replay, list, verify, listen, inspect",
 	"license": "MIT",
 	"repository": {

@@ -1,6 +1,6 @@
 {
 	"name": "@hookkit-dev/adapter-hono",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Hono adapter for HookKit: raw-body helper + app.request delivery target",
 	"license": "MIT",
 	"repository": {

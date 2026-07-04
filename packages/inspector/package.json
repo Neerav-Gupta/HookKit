@@ -1,6 +1,6 @@
 {
 	"name": "@hookkit-dev/inspector",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "HookKit local webhook inspector: capture, inspect, replay, forward — 127.0.0.1 by default",
 	"license": "MIT",
 	"repository": {

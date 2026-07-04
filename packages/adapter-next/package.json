@@ -1,6 +1,6 @@
 {
 	"name": "@hookkit-dev/adapter-next",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Next.js (App Router) adapter for HookKit: raw-body helper + route-handler delivery target",
 	"license": "MIT",
 	"repository": {

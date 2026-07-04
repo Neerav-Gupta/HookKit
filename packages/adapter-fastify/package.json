@@ -1,6 +1,6 @@
 {
 	"name": "@hookkit-dev/adapter-fastify",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Fastify adapter for HookKit: raw-body capture + inject-based delivery target",
 	"license": "MIT",
 	"repository": {
