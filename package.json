@@ -10,7 +10,8 @@
 		"verify": "biome check . && pnpm -r typecheck && vitest run && pnpm -r build",
 		"typecheck": "tsc --noEmit -p tsconfig.json",
 		"test": "vitest run",
-		"build": "pnpm -r build"
+		"build": "pnpm -r build",
+		"hookkit": "node packages/cli/dist/cli.js"
 	},
 	"packageManager": "pnpm@11.9.0",
 	"devDependencies": {

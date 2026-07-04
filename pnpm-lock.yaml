@@ -126,6 +126,19 @@ importers:
         specifier: workspace:*
         version: link:../core
 
+  packages/cli:
+    dependencies:
+      '@hookkit-dev/fixtures':
+        specifier: workspace:*
+        version: link:../fixtures
+      cac:
+        specifier: ^6.7.14
+        version: 6.7.14
+    devDependencies:
+      '@hookkit-dev/core':
+        specifier: workspace:*
+        version: link:../core
+
   packages/core:
     dependencies:
       '@hookkit-dev/fixtures':

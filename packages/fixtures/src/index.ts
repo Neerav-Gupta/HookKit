@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -17,10 +18,21 @@ export interface Fixture {
 	path: string;
 }
 
-// Works from both src/ (tests run against TS source) and dist/ (built output);
-// each is one level below the package root. tsup `shims` provides
-// import.meta.url in the CJS build.
-const packageRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
+// The fixture files live on disk in this package; locate the package root
+// even when this module is bundled into another package (e.g. the CLI):
+// self-resolution via node_modules finds the real package directory. Falls
+// back to the module location (src/ and dist/ are one level below the root).
+const packageRoot = (() => {
+	try {
+		return dirname(
+			createRequire(import.meta.url).resolve(
+				"@hookkit-dev/fixtures/package.json",
+			),
+		);
+	} catch {
+		return join(dirname(fileURLToPath(import.meta.url)), "..");
+	}
+})();
 
 export function loadManifest(): FixtureManifest {
 	return JSON.parse(

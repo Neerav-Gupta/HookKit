@@ -1,18 +1,18 @@
 {
-	"name": "@hookkit-dev/fixtures",
+	"name": "@hookkit-dev/cli",
 	"version": "0.0.1",
-	"description": "Bundled, versioned, synthetic webhook payload fixtures for HookKit",
+	"description": "HookKit dev CLI: trigger, replay, list, verify, listen, inspect",
 	"license": "MIT",
 	"type": "module",
 	"main": "./src/index.ts",
 	"exports": {
-		".": "./src/index.ts",
-		"./package.json": "./package.json"
+		".": "./src/index.ts"
+	},
+	"bin": {
+		"hookkit": "./dist/cli.js"
 	},
 	"files": [
-		"dist",
-		"fixtures",
-		"manifest.json"
+		"dist"
 	],
 	"publishConfig": {
 		"main": "./dist/index.cjs",
@@ -23,14 +23,20 @@
 				"types": "./dist/index.d.ts",
 				"import": "./dist/index.js",
 				"require": "./dist/index.cjs"
-			},
-			"./package.json": "./package.json"
+			}
 		}
 	},
 	"scripts": {
 		"typecheck": "tsc --noEmit",
 		"build": "tsup",
 		"test": "vitest run"
+	},
+	"dependencies": {
+		"@hookkit-dev/fixtures": "workspace:*",
+		"cac": "^6.7.14"
+	},
+	"devDependencies": {
+		"@hookkit-dev/core": "workspace:*"
 	},
 	"engines": {
 		"node": ">=20"
