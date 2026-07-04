@@ -1,0 +1,55 @@
+{
+	"name": "@hookkit-dev/inspector",
+	"version": "0.0.1",
+	"description": "HookKit local webhook inspector: capture, inspect, replay, forward — 127.0.0.1 by default",
+	"license": "MIT",
+	"type": "module",
+	"main": "./dist/index.js",
+	"types": "./src/index.ts",
+	"exports": {
+		".": {
+			"types": "./src/index.ts",
+			"default": "./dist/index.js"
+		}
+	},
+	"files": [
+		"dist",
+		"dist-ui",
+		"Dockerfile"
+	],
+	"publishConfig": {
+		"main": "./dist/index.js",
+		"types": "./dist/index.d.ts",
+		"exports": {
+			".": {
+				"types": "./dist/index.d.ts",
+				"import": "./dist/index.js"
+			}
+		}
+	},
+	"scripts": {
+		"typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.ui.json",
+		"build": "vite build && tsup",
+		"test": "vitest run"
+	},
+	"dependencies": {
+		"@hono/node-server": "^1.13.0",
+		"@hookkit-dev/core": "workspace:*",
+		"better-sqlite3": "^12.0.0",
+		"hono": "^4.0.0"
+	},
+	"devDependencies": {
+		"@tailwindcss/vite": "^4.0.0",
+		"@types/better-sqlite3": "^7.6.0",
+		"@types/react": "^19.0.0",
+		"@types/react-dom": "^19.0.0",
+		"@vitejs/plugin-react": "^5.0.0",
+		"react": "^19.0.0",
+		"react-dom": "^19.0.0",
+		"tailwindcss": "^4.0.0",
+		"vite": "^7.0.0"
+	},
+	"engines": {
+		"node": ">=20"
+	}
+}

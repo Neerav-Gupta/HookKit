@@ -78,6 +78,31 @@ cli
 		);
 	});
 
+cli
+	.command("inspect", "Launch the local webhook inspector UI")
+	.option("--port <port>", "Port to listen on", { default: 4000 })
+	.option("--host <host>", "Host to bind (non-loopback requires --auth)", {
+		default: "127.0.0.1",
+	})
+	.option("--auth <user:pass>", "Basic auth credentials")
+	.option(
+		"--db <path>",
+		"SQLite database path (default ~/.hookkit/inspector.sqlite)",
+	)
+	.action(async (options) => {
+		// Lazy import: the inspector (with its native SQLite dep) loads only
+		// when actually requested.
+		const { InspectorDb, startInspector } = await import(
+			"@hookkit-dev/inspector"
+		);
+		startInspector({
+			host: options.host,
+			port: Number(options.port),
+			...(options.auth ? { auth: options.auth } : {}),
+			...(options.db ? { db: new InspectorDb(options.db) } : {}),
+		});
+	});
+
 cli.help();
 cli.version("0.0.1");
 
