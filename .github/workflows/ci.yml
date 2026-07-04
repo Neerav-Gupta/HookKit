@@ -21,6 +21,7 @@ jobs:
       # except loopback-less isolation (loopback is added for local-socket tests).
       - name: Offline tests (core, sdk, cli)
         run: |
-          sudo unshare -n -- sh -c 'ip link set lo up; su runner -c "cd $GITHUB_WORKSPACE && pnpm --filter @hookkit-dev/core --filter @hookkit-dev/sdk --filter @hookkit-dev/cli test"'
+          PNPM="$(command -v pnpm)"
+          sudo unshare -n -- sh -c "ip link set lo up; cd \"$GITHUB_WORKSPACE\"; \"$PNPM\" --filter @hookkit-dev/core --filter @hookkit-dev/sdk --filter @hookkit-dev/cli test"
       - name: Full verify (lint + typecheck + test + build)
         run: pnpm verify
