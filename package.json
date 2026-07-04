@@ -1,0 +1,24 @@
+{
+	"name": "hookkit-monorepo",
+	"private": true,
+	"type": "module",
+	"license": "MIT",
+	"engines": {
+		"node": ">=20"
+	},
+	"scripts": {
+		"verify": "biome check . && pnpm -r typecheck && vitest run && pnpm -r build",
+		"typecheck": "tsc --noEmit -p tsconfig.json",
+		"test": "vitest run",
+		"build": "pnpm -r build"
+	},
+	"packageManager": "pnpm@11.9.0",
+	"devDependencies": {
+		"@biomejs/biome": "^2.5.2",
+		"@changesets/cli": "^2.31.0",
+		"@types/node": "^26.1.0",
+		"tsup": "^8.5.1",
+		"typescript": "^5.9.3",
+		"vitest": "^4.1.9"
+	}
+}

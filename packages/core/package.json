@@ -1,0 +1,40 @@
+{
+	"name": "@hookkit-dev/core",
+	"version": "0.0.1",
+	"description": "HookKit core: provider registry, signature engine, event generator, dispatcher, harness",
+	"license": "MIT",
+	"type": "module",
+	"main": "./src/index.ts",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"files": [
+		"dist"
+	],
+	"publishConfig": {
+		"main": "./dist/index.cjs",
+		"module": "./dist/index.js",
+		"types": "./dist/index.d.ts",
+		"exports": {
+			".": {
+				"types": "./dist/index.d.ts",
+				"import": "./dist/index.js",
+				"require": "./dist/index.cjs"
+			}
+		}
+	},
+	"scripts": {
+		"typecheck": "tsc --noEmit",
+		"build": "tsup",
+		"test": "vitest run"
+	},
+	"dependencies": {
+		"@hookkit-dev/fixtures": "workspace:*"
+	},
+	"devDependencies": {
+		"stripe": "^18.0.0"
+	},
+	"engines": {
+		"node": ">=20"
+	}
+}

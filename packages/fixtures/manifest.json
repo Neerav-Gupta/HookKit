@@ -1,0 +1,5 @@
+{
+	"stripe/checkout.session.completed": {
+		"2025-04-10": "fixtures/stripe/2025-04-10/checkout.session.completed.json"
+	}
+}
