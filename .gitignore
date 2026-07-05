@@ -9,3 +9,8 @@ coverage/
 .env.*
 *.sqlite
 *.sqlite-journal
+
+# Internal-only: kept locally, not published to the public repo.
+/CLAUDE.md
+/build_guide.md
+/scripts/
