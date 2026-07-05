@@ -90,6 +90,13 @@ importers:
       '@hookkit-dev/core':
         specifier: workspace:*
         version: link:../core
+    devDependencies:
+      '@types/express':
+        specifier: ^5.0.0
+        version: 5.0.6
+      express:
+        specifier: ^5.1.0
+        version: 5.2.1
 
   packages/adapter-fastify:
     dependencies:

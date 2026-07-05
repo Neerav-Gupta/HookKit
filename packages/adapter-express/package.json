@@ -34,10 +34,15 @@
 	},
 	"scripts": {
 		"typecheck": "tsc --noEmit",
-		"build": "tsup"
+		"build": "tsup",
+		"test": "vitest run"
 	},
 	"dependencies": {
 		"@hookkit-dev/core": "workspace:*"
+	},
+	"devDependencies": {
+		"@types/express": "^5.0.0",
+		"express": "^5.1.0"
 	},
 	"engines": {
 		"node": ">=20"
