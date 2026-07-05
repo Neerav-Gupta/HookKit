@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { getHeader, hmacSha256Base64, safeEqual } from "../signature.js";
+import { hmacSha256Base64Web, safeEqualWeb } from "../signature-web.js";
 import type { ProviderAdapter } from "../types.js";
 
 const API_VERSION = "2025-04";
@@ -26,6 +27,17 @@ export const shopify: ProviderAdapter = {
 		}
 		const expected = hmacSha256Base64(secret, rawBody);
 		return safeEqual(header, expected)
+			? { valid: true }
+			: { valid: false, reason: "signature mismatch" };
+	},
+
+	async verifyAsync({ rawBody, headers, secret }) {
+		const header = getHeader(headers, "X-Shopify-Hmac-Sha256");
+		if (!header) {
+			return { valid: false, reason: "missing X-Shopify-Hmac-Sha256 header" };
+		}
+		const expected = await hmacSha256Base64Web(secret, rawBody);
+		return safeEqualWeb(header, expected)
 			? { valid: true }
 			: { valid: false, reason: "signature mismatch" };
 	},

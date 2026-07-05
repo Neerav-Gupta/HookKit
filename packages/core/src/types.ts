@@ -20,6 +20,21 @@ export interface ProviderAdapter {
 	}): { valid: boolean; reason?: string };
 
 	/**
+	 * OPTIONAL async equivalent of verify(), built on the standard Web Crypto
+	 * API (globalThis.crypto.subtle) instead of node:crypto. Used only by
+	 * edge-targeting production middleware (adapter-hono, adapter-next) so
+	 * they run unmodified on Cloudflare Workers / Vercel Edge / Deno Deploy.
+	 * `rawBody` is `Uint8Array` (not `Buffer`) since edge runtimes always have
+	 * the former but not reliably the latter. Never used by testing/generation.
+	 */
+	verifyAsync?(input: {
+		rawBody: Uint8Array;
+		headers: Record<string, string>;
+		secret: string;
+		toleranceSec?: number;
+	}): Promise<{ valid: boolean; reason?: string }>;
+
+	/**
 	 * Optional provider-realism headers that depend on the event rather than
 	 * the body/secret (e.g. GitHub's X-GitHub-Event, Shopify's X-Shopify-Topic).
 	 * Merged into generated events alongside sign()'s output.

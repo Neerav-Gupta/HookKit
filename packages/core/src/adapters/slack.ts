@@ -5,6 +5,7 @@ import {
 	safeEqual,
 	withinTolerance,
 } from "../signature.js";
+import { hmacSha256HexWeb, safeEqualWeb } from "../signature-web.js";
 import type { ProviderAdapter } from "../types.js";
 
 /** Every Events API callback shares the same envelope; the inner event varies. */
@@ -73,6 +74,41 @@ export const slack: ProviderAdapter = {
 		const base = `v0:${timestamp}:${rawBody.toString("utf8")}`;
 		const expected = `v0=${hmacSha256Hex(secret, base)}`;
 		if (!safeEqual(signature, expected)) {
+			return { valid: false, reason: "signature mismatch" };
+		}
+		if (!withinTolerance(timestamp, toleranceSec)) {
+			return { valid: false, reason: "timestamp outside tolerance" };
+		}
+		return { valid: true };
+	},
+
+	async verifyAsync({
+		rawBody,
+		headers,
+		secret,
+		toleranceSec = DEFAULT_TOLERANCE_SEC,
+	}) {
+		const signature = getHeader(headers, "X-Slack-Signature");
+		if (!signature) {
+			return { valid: false, reason: "missing X-Slack-Signature header" };
+		}
+		const timestampHeader = getHeader(headers, "X-Slack-Request-Timestamp");
+		if (!timestampHeader) {
+			return {
+				valid: false,
+				reason: "missing X-Slack-Request-Timestamp header",
+			};
+		}
+		const timestamp = Number(timestampHeader);
+		if (Number.isNaN(timestamp)) {
+			return {
+				valid: false,
+				reason: "malformed X-Slack-Request-Timestamp header",
+			};
+		}
+		const base = `v0:${timestamp}:${new TextDecoder().decode(rawBody)}`;
+		const expected = `v0=${await hmacSha256HexWeb(secret, base)}`;
+		if (!safeEqualWeb(signature, expected)) {
 			return { valid: false, reason: "signature mismatch" };
 		}
 		if (!withinTolerance(timestamp, toleranceSec)) {

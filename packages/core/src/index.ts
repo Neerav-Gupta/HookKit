@@ -29,6 +29,12 @@ export {
 	safeEqual,
 	withinTolerance,
 } from "./signature.js";
+export {
+	hmacSha1HexWeb,
+	hmacSha256Base64Web,
+	hmacSha256HexWeb,
+	safeEqualWeb,
+} from "./signature-web.js";
 export type {
 	DeliveryResult,
 	DeliveryTarget,

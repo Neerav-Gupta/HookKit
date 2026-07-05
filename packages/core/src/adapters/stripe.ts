@@ -5,6 +5,7 @@ import {
 	safeEqual,
 	withinTolerance,
 } from "../signature.js";
+import { hmacSha256HexWeb, safeEqualWeb } from "../signature-web.js";
 import type { ProviderAdapter } from "../types.js";
 
 /** Every Stripe event shares the same envelope; only `type` and the inner object vary. */
@@ -82,6 +83,51 @@ export const stripe: ProviderAdapter = {
 			`${timestamp}.${rawBody.toString("utf8")}`,
 		);
 		if (!candidates.some((candidate) => safeEqual(candidate, expected))) {
+			return { valid: false, reason: "signature mismatch" };
+		}
+		if (!withinTolerance(timestamp, toleranceSec)) {
+			return { valid: false, reason: "timestamp outside tolerance" };
+		}
+		return { valid: true };
+	},
+
+	async verifyAsync({
+		rawBody,
+		headers,
+		secret,
+		toleranceSec = DEFAULT_TOLERANCE_SEC,
+	}) {
+		const header = getHeader(headers, "Stripe-Signature");
+		if (!header)
+			return { valid: false, reason: "missing Stripe-Signature header" };
+
+		let timestamp: number | undefined;
+		const candidates: string[] = [];
+		for (const part of header.split(",")) {
+			const eq = part.indexOf("=");
+			if (eq === -1) continue;
+			const key = part.slice(0, eq).trim();
+			const value = part.slice(eq + 1).trim();
+			if (key === "t") timestamp = Number(value);
+			if (key === "v1") candidates.push(value);
+		}
+		if (timestamp === undefined || Number.isNaN(timestamp)) {
+			return {
+				valid: false,
+				reason: "malformed Stripe-Signature header: missing t=",
+			};
+		}
+		if (candidates.length === 0) {
+			return {
+				valid: false,
+				reason: "malformed Stripe-Signature header: missing v1=",
+			};
+		}
+		const expected = await hmacSha256HexWeb(
+			secret,
+			`${timestamp}.${new TextDecoder().decode(rawBody)}`,
+		);
+		if (!candidates.some((candidate) => safeEqualWeb(candidate, expected))) {
 			return { valid: false, reason: "signature mismatch" };
 		}
 		if (!withinTolerance(timestamp, toleranceSec)) {

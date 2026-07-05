@@ -227,5 +227,87 @@ export function conformanceChecks(
 		},
 	);
 
+	if (adapter.verifyAsync) {
+		const verifyAsync = adapter.verifyAsync.bind(adapter);
+		for (const eventType of eventTypes) {
+			checks.push({
+				name: `verifyAsync agrees with verify(): ${eventType} round-trip`,
+				run: async () => {
+					const evt = generate(adapter.id, eventType, {
+						secret,
+						timestamp: now(),
+					});
+					const result = await verifyAsync({
+						rawBody: new Uint8Array(evt.rawBody),
+						headers: evt.headers,
+						secret,
+					});
+					assert.deepEqual(result, { valid: true });
+				},
+			});
+		}
+		checks.push(
+			{
+				name: "verifyAsync rejects a tampered body",
+				run: async () => {
+					assert.ok(firstEvent, "adapter declares at least one event");
+					const evt = generate(adapter.id, firstEvent, {
+						secret,
+						timestamp: now(),
+					});
+					const tampered = new Uint8Array(
+						Buffer.concat([evt.rawBody, Buffer.from(" ")]),
+					);
+					const result = await verifyAsync({
+						rawBody: tampered,
+						headers: evt.headers,
+						secret,
+					});
+					assert.equal(result.valid, false, "tampered body must be rejected");
+				},
+			},
+			{
+				name: "verifyAsync rejects a wrong secret",
+				run: async () => {
+					assert.ok(firstEvent, "adapter declares at least one event");
+					const evt = generate(adapter.id, firstEvent, {
+						secret,
+						timestamp: now(),
+					});
+					const result = await verifyAsync({
+						rawBody: new Uint8Array(evt.rawBody),
+						headers: evt.headers,
+						secret: WRONG_SECRET,
+					});
+					assert.equal(result.valid, false, "wrong secret must be rejected");
+				},
+			},
+			{
+				name: "verifyAsync timestamped schemes reject stale timestamps",
+				run: async () => {
+					assert.ok(firstEvent, "adapter declares at least one event");
+					const stale = now() - 100_000;
+					const staleEvt = generate(adapter.id, firstEvent, {
+						secret,
+						timestamp: stale,
+					});
+					const fresh = generate(adapter.id, firstEvent, {
+						secret,
+						timestamp: now(),
+					});
+					const timestamped =
+						JSON.stringify(staleEvt.headers) !== JSON.stringify(fresh.headers);
+					if (!timestamped) return; // untimestamped scheme (e.g. GitHub, Shopify)
+					const result = await verifyAsync({
+						rawBody: new Uint8Array(staleEvt.rawBody),
+						headers: staleEvt.headers,
+						secret,
+					});
+					assert.equal(result.valid, false, "stale timestamp must be rejected");
+				},
+			},
+		);
+	}
+
 	return checks;
 }

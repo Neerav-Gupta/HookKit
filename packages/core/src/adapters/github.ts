@@ -5,6 +5,11 @@ import {
 	hmacSha256Hex,
 	safeEqual,
 } from "../signature.js";
+import {
+	hmacSha1HexWeb,
+	hmacSha256HexWeb,
+	safeEqualWeb,
+} from "../signature-web.js";
 import type { ProviderAdapter } from "../types.js";
 
 /**
@@ -38,6 +43,24 @@ export const github: ProviderAdapter = {
 		if (sha1Header) {
 			const expected = `sha1=${hmacSha1Hex(secret, rawBody)}`;
 			return safeEqual(sha1Header, expected)
+				? { valid: true }
+				: { valid: false, reason: "signature mismatch (legacy sha1)" };
+		}
+		return { valid: false, reason: "missing X-Hub-Signature-256 header" };
+	},
+
+	async verifyAsync({ rawBody, headers, secret }) {
+		const sha256Header = getHeader(headers, "X-Hub-Signature-256");
+		if (sha256Header) {
+			const expected = `sha256=${await hmacSha256HexWeb(secret, rawBody)}`;
+			return safeEqualWeb(sha256Header, expected)
+				? { valid: true }
+				: { valid: false, reason: "signature mismatch" };
+		}
+		const sha1Header = getHeader(headers, "X-Hub-Signature");
+		if (sha1Header) {
+			const expected = `sha1=${await hmacSha1HexWeb(secret, rawBody)}`;
+			return safeEqualWeb(sha1Header, expected)
 				? { valid: true }
 				: { valid: false, reason: "signature mismatch (legacy sha1)" };
 		}
