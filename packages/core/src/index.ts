@@ -17,6 +17,10 @@ export {
 	ordering,
 	retry,
 } from "./harness.js";
+export {
+	type IdempotencyStore,
+	InMemoryIdempotencyStore,
+} from "./idempotency.js";
 export { deepMerge, setPath } from "./merge.js";
 export { ProviderRegistry, registry } from "./registry.js";
 export {
