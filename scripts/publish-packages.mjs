@@ -46,11 +46,17 @@ for (const packageDir of packageDirs) {
 		}
 	}
 
-	const args = ["publish", "--access", "public"];
+	// MUST be `pnpm publish`, not `npm publish`: only pnpm rewrites
+	// `workspace:*` dependency ranges to real versions and applies
+	// `publishConfig` overrides (main/module/types/exports pointing at
+	// dist/) at publish time. `npm publish` does neither, which produced
+	// unusable 0.0.2 packages (main pointed at TS source; workspace:*
+	// deps made `npm install` fail outright for every consumer).
+	const args = ["publish", "--access", "public", "--no-git-checks"];
 	if (dryRun) args.push("--dry-run");
 
 	console.log(`\nPublishing ${packageName}${dryRun ? " (dry-run)" : ""}...`);
-	const result = spawnSync("npm", args, {
+	const result = spawnSync("pnpm", args, {
 		cwd: absoluteDir,
 		stdio: "inherit",
 		env: process.env,

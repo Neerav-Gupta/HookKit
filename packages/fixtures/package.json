@@ -1,6 +1,6 @@
 {
 	"name": "@hookkit-dev/fixtures",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"description": "Bundled, versioned, synthetic webhook payload fixtures for HookKit",
 	"license": "MIT",
 	"repository": {

@@ -1,6 +1,6 @@
 {
 	"name": "@hookkit-dev/adapter-nest",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"description": "NestJS adapter for HookKit: raw-body guidance + delivery target for Nest's HTTP adapter",
 	"license": "MIT",
 	"repository": {
