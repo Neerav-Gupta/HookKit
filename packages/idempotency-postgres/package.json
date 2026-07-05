@@ -1,0 +1,53 @@
+{
+	"name": "@hookkit-dev/idempotency-postgres",
+	"version": "0.0.3",
+	"description": "Postgres-backed IdempotencyStore for HookKit production verify middleware",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Neerav-Gupta/HookKit.git",
+		"directory": "packages/idempotency-postgres"
+	},
+	"homepage": "https://github.com/Neerav-Gupta/HookKit#readme",
+	"bugs": {
+		"url": "https://github.com/Neerav-Gupta/HookKit/issues"
+	},
+	"type": "module",
+	"main": "./src/index.ts",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"files": [
+		"dist"
+	],
+	"publishConfig": {
+		"main": "./dist/index.cjs",
+		"module": "./dist/index.js",
+		"types": "./dist/index.d.ts",
+		"exports": {
+			".": {
+				"types": "./dist/index.d.ts",
+				"import": "./dist/index.js",
+				"require": "./dist/index.cjs"
+			}
+		}
+	},
+	"scripts": {
+		"typecheck": "tsc --noEmit",
+		"build": "tsup",
+		"test": "vitest run"
+	},
+	"dependencies": {
+		"@hookkit-dev/core": "workspace:*"
+	},
+	"peerDependencies": {
+		"pg": ">=8"
+	},
+	"devDependencies": {
+		"@types/pg": "^8.11.0",
+		"pg": "^8.13.0"
+	},
+	"engines": {
+		"node": ">=20"
+	}
+}
