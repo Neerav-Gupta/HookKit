@@ -92,6 +92,9 @@ export function App() {
 	);
 	const [replayResult, setReplayResult] = useState<string>("");
 	const [newName, setNewName] = useState("");
+	const [fixtureProvider, setFixtureProvider] = useState("");
+	const [fixtureEvent, setFixtureEvent] = useState("");
+	const [saveFixtureResult, setSaveFixtureResult] = useState("");
 
 	const loadEndpoints = useCallback(async () => {
 		const res = await fetch("/api/endpoints");
@@ -141,8 +144,31 @@ export function App() {
 
 	async function openRequest(request: CapturedRequest) {
 		const res = await fetch(`/api/requests/${request.id}`);
-		setSelected(await res.json());
+		const detail = await res.json();
+		setSelected(detail);
 		setReplayResult("");
+		setSaveFixtureResult("");
+		setFixtureProvider(detail.provider_guess ?? "");
+		setFixtureEvent(detail.schema_drift?.eventType ?? "");
+	}
+
+	async function saveAsFixture() {
+		if (!selected || !fixtureProvider || !fixtureEvent) return;
+		setSaveFixtureResult("saving…");
+		const res = await fetch(`/api/requests/${selected.id}/save-fixture`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				provider: fixtureProvider,
+				eventType: fixtureEvent,
+			}),
+		});
+		const data = await res.json();
+		setSaveFixtureResult(
+			res.ok
+				? `saved ${data.relPath}${data.readyToUse ? " — ready to use" : " — register this event in the adapter's events map to make it triggerable"}`
+				: `error: ${data.error ?? res.status}`,
+		);
 	}
 
 	async function replay() {
@@ -286,6 +312,32 @@ export function App() {
 									Replay / forward
 								</button>
 								<span className="text-sm text-slate-600">{replayResult}</span>
+							</div>
+
+							<div className="flex items-center gap-2">
+								<input
+									className="w-40 rounded border border-slate-300 px-2 py-1 text-sm"
+									placeholder="provider"
+									value={fixtureProvider}
+									onChange={(e) => setFixtureProvider(e.target.value)}
+								/>
+								<input
+									className="w-56 rounded border border-slate-300 px-2 py-1 text-sm"
+									placeholder="event type"
+									value={fixtureEvent}
+									onChange={(e) => setFixtureEvent(e.target.value)}
+								/>
+								<button
+									type="button"
+									onClick={() => void saveAsFixture()}
+									className="rounded bg-slate-700 px-3 py-1 text-sm font-medium text-white hover:bg-slate-600"
+									title="Save this captured request as a fixture — usable immediately via hookkit trigger/replay"
+								>
+									Save as fixture
+								</button>
+								<span className="text-sm text-slate-600">
+									{saveFixtureResult}
+								</span>
 							</div>
 
 							<div>

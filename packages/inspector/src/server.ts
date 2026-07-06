@@ -9,6 +9,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { type ServerType, serve } from "@hono/node-server";
 import { detectSchemaDrift, dispatch, registry } from "@hookkit-dev/core";
+import { addFixture } from "@hookkit-dev/fixtures";
 import { Hono } from "hono";
 import { basicAuth } from "hono/basic-auth";
 import { streamSSE } from "hono/streaming";
@@ -163,6 +164,42 @@ export function createInspectorApp(options: InspectorOptions = {}): {
 			replays: db.listReplays(row.id),
 			schema_drift: computeSchemaDrift(row),
 		});
+	});
+
+	// Capture → fixture loop: save a real captured request as a fixture. If
+	// the event type is already known to the provider's adapter (e.g. a new
+	// API-version variant of an existing event), it's immediately usable via
+	// trigger/replay with no code changes; a genuinely new event type still
+	// needs one manual step (registering it in the adapter's events map).
+	// Shares its manifest-writing logic with `hookkit fixtures add` via
+	// @hookkit-dev/fixtures.
+	app.post("/api/requests/:id/save-fixture", async (c) => {
+		const row = db.requestById(c.req.param("id"));
+		if (!row) return c.json({ error: "not found" }, 404);
+		const body = (await c.req.json().catch(() => ({}))) as {
+			provider?: string;
+			eventType?: string;
+			apiVersion?: string;
+		};
+		if (!body.provider || !body.eventType) {
+			return c.json({ error: "provider and eventType are required" }, 400);
+		}
+		const result = addFixture(body.provider, body.eventType, {
+			rawBody: row.body_blob,
+			...(body.apiVersion ? { apiVersion: body.apiVersion } : {}),
+		});
+		if (result.alreadyExisted) {
+			return c.json(
+				{
+					error: `fixture ${result.fixtureId}@${result.apiVersion} already exists`,
+				},
+				409,
+			);
+		}
+		const readyToUse =
+			registry.has(body.provider) &&
+			body.eventType in registry.get(body.provider).events;
+		return c.json({ ...result, readyToUse }, 201);
 	});
 
 	// Replay/forward the EXACT captured bytes to a target URL.

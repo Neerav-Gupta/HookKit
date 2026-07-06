@@ -210,6 +210,9 @@ importers:
       '@hookkit-dev/core':
         specifier: workspace:*
         version: link:../core
+      '@hookkit-dev/fixtures':
+        specifier: workspace:*
+        version: link:../fixtures
       better-sqlite3:
         specifier: ^12.0.0
         version: 12.11.1

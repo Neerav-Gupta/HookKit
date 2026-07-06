@@ -78,25 +78,65 @@ cli
 		);
 	});
 
+// cac@6 does not reliably match multi-word (space-separated) literal command
+// names like "fixtures add <a> <b>" at parse time (registers fine, never
+// matches) — verified directly against the installed version. A single
+// "fixtures <action> [...rest]" command with internal dispatch is the
+// pattern that actually works; the built-in `list <what> [provider]` command
+// above uses the same shape for the same reason.
 cli
 	.command(
-		"fixtures <action> <provider> <event>",
-		"Scaffold a new fixture (action: add)",
+		"fixtures <action> [...rest]",
+		"Scaffold a fixture (add) or save one from the inspector",
 	)
 	.option("--api-version <version>", "API version directory for the fixture")
-	.action(async (action: string, provider: string, event: string, options) => {
-		if (action !== "add") {
-			emit({
-				exitCode: 1,
-				output: ["usage: hookkit fixtures add <provider> <event>"],
-			});
+	.option("--inspector-url <url>", "Running inspector's base URL", {
+		default: "http://127.0.0.1:4000",
+	})
+	.option("--provider <provider>", "Provider id (for save-from-inspector)")
+	.option("--event <event>", "Event type (for save-from-inspector)")
+	.action(async (action: string, rest: string[], options) => {
+		if (action === "add") {
+			const [provider, event] = rest;
+			if (!provider || !event) {
+				emit({
+					exitCode: 1,
+					output: ["usage: hookkit fixtures add <provider> <event>"],
+				});
+			}
+			const { fixturesAdd } = await import("./fixtures-cmd.js");
+			emit(
+				fixturesAdd(provider, event, {
+					...(options.apiVersion ? { apiVersion: options.apiVersion } : {}),
+				}),
+			);
 		}
-		const { fixturesAdd } = await import("./fixtures-cmd.js");
-		emit(
-			fixturesAdd(provider, event, {
-				...(options.apiVersion ? { apiVersion: options.apiVersion } : {}),
-			}),
-		);
+		if (action === "save-from-inspector") {
+			const [requestId] = rest;
+			if (!requestId || !options.provider || !options.event) {
+				emit({
+					exitCode: 1,
+					output: [
+						"usage: hookkit fixtures save-from-inspector <requestId> --provider <p> --event <e>",
+					],
+				});
+			}
+			const { fixturesSaveFromInspector } = await import("./fixtures-cmd.js");
+			emit(
+				await fixturesSaveFromInspector(requestId, {
+					inspectorUrl: options.inspectorUrl,
+					provider: options.provider,
+					eventType: options.event,
+					...(options.apiVersion ? { apiVersion: options.apiVersion } : {}),
+				}),
+			);
+		}
+		emit({
+			exitCode: 1,
+			output: [
+				"usage: hookkit fixtures add <provider> <event> | fixtures save-from-inspector <requestId> --provider <p> --event <e>",
+			],
+		});
 	});
 
 cli

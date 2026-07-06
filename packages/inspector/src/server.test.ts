@@ -1,6 +1,13 @@
+import { readFileSync, rmSync, writeFileSync } from "node:fs";
 import { createServer } from "node:http";
+import { join } from "node:path";
 import { generate, registry } from "@hookkit-dev/core";
-import { afterAll, describe, expect, it } from "vitest";
+import {
+	fixturePackageRoot,
+	getFixture,
+	loadManifest,
+} from "@hookkit-dev/fixtures";
+import { afterAll, afterEach, describe, expect, it } from "vitest";
 import { InspectorDb } from "./db.js";
 import { createInspectorApp, guessProvider } from "./server.js";
 
@@ -155,6 +162,130 @@ describe("inspector schema-drift detection", () => {
 		const detailRes = await app.request(`/api/requests/${id}`);
 		const detail = (await detailRes.json()) as { schema_drift?: unknown };
 		expect(detail.schema_drift).toBeUndefined();
+	});
+});
+
+describe("inspector: capture → fixture loop", () => {
+	// save-fixture writes into the real @hookkit-dev/fixtures package (that's
+	// its whole job) — use an obviously-fake provider name and always restore
+	// manifest.json, even if an assertion throws.
+	const TEST_PROVIDER = "__vitest_inspector_savefixture_test__";
+	const root = fixturePackageRoot();
+	const manifestPath = join(root, "manifest.json");
+	const originalManifest = readFileSync(manifestPath, "utf8");
+
+	afterEach(() => {
+		writeFileSync(manifestPath, originalManifest);
+		rmSync(join(root, "fixtures", TEST_PROVIDER), {
+			recursive: true,
+			force: true,
+		});
+	});
+
+	it("saves a captured request's exact bytes as a fixture", async () => {
+		const endpoint = await createEndpoint();
+		const evt = generate("stripe", "checkout.session.completed", { secret });
+		const captureRes = await app.request(`/in/${endpoint.slug}`, {
+			method: "POST",
+			headers: evt.headers,
+			body: new Uint8Array(evt.rawBody),
+		});
+		const { id } = (await captureRes.json()) as { id: string };
+
+		const saveRes = await app.request(`/api/requests/${id}/save-fixture`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				provider: TEST_PROVIDER,
+				eventType: "captured.event",
+			}),
+		});
+		expect(saveRes.status).toBe(201);
+		const saved = (await saveRes.json()) as {
+			fixtureId: string;
+			apiVersion: string;
+			readyToUse: boolean;
+		};
+		expect(saved.fixtureId).toBe(`${TEST_PROVIDER}/captured.event`);
+		expect(saved.readyToUse).toBe(false); // TEST_PROVIDER isn't a registered adapter
+
+		const fixture = getFixture(saved.fixtureId, saved.apiVersion);
+		expect(fixture.rawBody.equals(evt.rawBody)).toBe(true); // exact captured bytes
+		expect(loadManifest()[saved.fixtureId]?.[saved.apiVersion]).toBeDefined();
+	});
+
+	it("reports readyToUse:true for a new API-version variant of an already-known event", async () => {
+		const endpoint = await createEndpoint();
+		const evt = generate("stripe", "checkout.session.completed", { secret });
+		const captureRes = await app.request(`/in/${endpoint.slug}`, {
+			method: "POST",
+			headers: evt.headers,
+			body: new Uint8Array(evt.rawBody),
+		});
+		const { id } = (await captureRes.json()) as { id: string };
+
+		const saveRes = await app.request(`/api/requests/${id}/save-fixture`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				provider: "stripe",
+				eventType: "checkout.session.completed",
+				apiVersion: "__vitest_test_variant__",
+			}),
+		});
+		expect(saveRes.status).toBe(201);
+		const saved = (await saveRes.json()) as { readyToUse: boolean };
+		expect(saved.readyToUse).toBe(true); // "checkout.session.completed" is a real stripe event
+
+		// Clean up: this one writes into the real stripe fixture dir.
+		rmSync(join(root, "fixtures", "stripe", "__vitest_test_variant__"), {
+			recursive: true,
+			force: true,
+		});
+	});
+
+	it("409s when the fixture is already registered", async () => {
+		const endpoint = await createEndpoint();
+		const evt = generate("stripe", "checkout.session.completed", { secret });
+		const captureRes = await app.request(`/in/${endpoint.slug}`, {
+			method: "POST",
+			headers: evt.headers,
+			body: new Uint8Array(evt.rawBody),
+		});
+		const { id } = (await captureRes.json()) as { id: string };
+		const body = JSON.stringify({
+			provider: TEST_PROVIDER,
+			eventType: "captured.event",
+		});
+		const first = await app.request(`/api/requests/${id}/save-fixture`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body,
+		});
+		expect(first.status).toBe(201);
+		const second = await app.request(`/api/requests/${id}/save-fixture`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body,
+		});
+		expect(second.status).toBe(409);
+	});
+
+	it("400s when provider or eventType is missing", async () => {
+		const endpoint = await createEndpoint();
+		const evt = generate("stripe", "checkout.session.completed", { secret });
+		const captureRes = await app.request(`/in/${endpoint.slug}`, {
+			method: "POST",
+			headers: evt.headers,
+			body: new Uint8Array(evt.rawBody),
+		});
+		const { id } = (await captureRes.json()) as { id: string };
+		const res = await app.request(`/api/requests/${id}/save-fixture`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ provider: TEST_PROVIDER }),
+		});
+		expect(res.status).toBe(400);
 	});
 });
 
