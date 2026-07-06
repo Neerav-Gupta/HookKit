@@ -15,7 +15,24 @@ export const hookkit = {
 	github: (config: { secret: string }) => providerClient("github", config),
 	shopify: (config: { secret: string }) => providerClient("shopify", config),
 	slack: (config: { secret: string }) => providerClient("slack", config),
+	discord: (config: { secret: string }) => providerClient("discord", config),
+	gitlab: (config: { secret: string }) => providerClient("gitlab", config),
 	standardWebhooks: (config: { secret: string }) =>
+		providerClient("standard-webhooks", config),
+	/**
+	 * Convenience aliases for Svix/Standard-Webhooks-powered services — as of
+	 * this writing, Clerk, Resend, and Polar all use the Standard Webhooks
+	 * spec under the hood, so `hookkit.provider("standard-webhooks", ...)`
+	 * already works for them; these are just named shortcuts. Always confirm
+	 * against the provider's current docs before relying on this, since
+	 * implementations can change. If your provider isn't listed here (or
+	 * above) but is Svix-powered, use `hookkit.standardWebhooks(...)` directly.
+	 */
+	clerk: (config: { secret: string }) =>
+		providerClient("standard-webhooks", config),
+	resend: (config: { secret: string }) =>
+		providerClient("standard-webhooks", config),
+	polar: (config: { secret: string }) =>
 		providerClient("standard-webhooks", config),
 	/** Correctness harness: idempotency, retry, ordering, malformed. */
 	harness,

@@ -4,6 +4,13 @@ If you want HookKit to support a new webhook provider, the implementation lives
 in the core package and the fixture package. The rest of HookKit reads from that
 shared provider registry.
 
+**Before writing a bespoke adapter, check whether the provider is
+Svix/Standard-Webhooks-powered.** A growing set of providers (Clerk, Resend,
+Polar, and anything Svix-based, as of this writing) already emit spec-compliant
+Standard Webhooks — `hookkit.provider("standard-webhooks", …)` (or an SDK alias
+like `hookkit.clerk(…)`) already covers them with zero new code. Always confirm
+against the provider's current docs, since implementations can change.
+
 Worked example: adding a fictional provider `acme` with event
 `order.shipped`.
 
@@ -34,6 +41,20 @@ The adapter should define:
 
 Do not re-serialize the payload before signing. The raw request body is the
 source of truth.
+
+Two edge cases the shared conformance suite already accounts for, if your
+provider needs them:
+
+- **No official verify library.** Some schemes (e.g. GitLab's static
+  shared-secret token) have nothing to compute, so there's no library to check
+  a golden test against. Document that explicitly in the golden test and
+  assert the provider's own documented behavior directly instead — the one
+  deliberate exception to "verify against official library."
+- **Signature doesn't bind to the body.** If the scheme validates a token
+  independent of the request body (again, GitLab), set `verifiesBody: false`
+  on the adapter so the conformance suite's tampered-body check skips
+  correctly. Never set this to make a real bug in your `verify()` disappear —
+  it's only for schemes that are genuinely, deliberately body-independent.
 
 ## 3. Register the provider
 

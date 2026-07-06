@@ -20,8 +20,10 @@ npm install @hookkit-dev/cli
 npm install @hookkit-dev/inspector
 ```
 
-Supported providers out of the box: Stripe, GitHub, Shopify, Slack, and
-Standard Webhooks.
+Supported providers out of the box: Stripe, GitHub, Shopify, Slack, Discord,
+GitLab, and Standard Webhooks — which also covers any Svix-powered service
+(Clerk, Resend, Polar, and others, as of this writing) via `hookkit.clerk(…)`/
+`hookkit.resend(…)`/`hookkit.polar(…)` or `hookkit.standardWebhooks(…)`.
 
 ## Use in a React app
 
