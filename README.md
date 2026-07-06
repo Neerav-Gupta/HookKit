@@ -1,11 +1,20 @@
 # HookKit
 
-HookKit is an offline-first webhook toolkit for JS and TS. It gives you three
-pieces you can use in your own app:
+HookKit is an offline-first webhook toolkit for JS and TS — both a test kit
+and a production dependency. It gives you:
 
 - a test SDK for generating and asserting webhook deliveries,
+- drop-in signature-verification middleware for Express, Fastify, Hono, and
+  Next.js (the Hono and Next.js versions run unmodified on Cloudflare
+  Workers, Vercel Edge, and Deno Deploy),
+- an idempotency store (in-memory, Redis, Postgres) built on a single atomic
+  primitive, wired into the middleware in one step,
 - a CLI for triggering, verifying, replaying, and listening for events,
-- a local inspector for capturing and replaying webhook traffic.
+- a local inspector for capturing and replaying webhook traffic — with a
+  one-click "save as fixture" that turns a real captured event into something
+  you replay in CI,
+- runtime schema-drift detection, so you find out when a provider's real
+  payload has quietly diverged from what your code expects.
 
 HookKit works with published npm packages under the `@hookkit-dev` scope. The
 CLI binary is `hookkit`.
@@ -25,10 +34,42 @@ GitLab, and Standard Webhooks — which also covers any Svix-powered service
 (Clerk, Resend, Polar, and others, as of this writing) via `hookkit.clerk(…)`/
 `hookkit.resend(…)`/`hookkit.polar(…)` or `hookkit.standardWebhooks(…)`.
 
-## Use in a React app
+## Use it in production
+
+Drop-in verify middleware replaces the raw signature-check boilerplate you'd
+otherwise copy-paste per provider — and optionally dedupes in the same step:
+
+```ts
+// Next.js App Router — app/api/webhooks/stripe/route.ts
+import { verifyRouteHandler } from "@hookkit-dev/adapter-next";
+import { RedisIdempotencyStore } from "@hookkit-dev/idempotency-redis";
+
+const store = new RedisIdempotencyStore(redis);
+
+export const POST = verifyRouteHandler(
+  "stripe",
+  {
+    secret: process.env.STRIPE_WEBHOOK_SECRET!,
+    idempotency: store,
+    idempotencyKey: (evt) => (evt as { id: string }).id,
+  },
+  (request, event) => {
+    // already verified AND deduped
+    return Response.json({ received: true });
+  },
+);
+```
+
+`adapter-hono` and `adapter-next` use the standard Web Crypto API
+unconditionally (never `node:crypto`), so the same handler runs on Node,
+Cloudflare Workers, Vercel Edge, and Deno Deploy with no changes.
+`adapter-express`/`adapter-fastify` give you the same shape on the faster,
+simpler `node:crypto` path for Node-only servers. See each adapter's README.
+
+## Use it in tests
 
 HookKit does not run in the browser. You use it around the webhook endpoint
-behind your React app, such as a Next.js route or an Express API.
+behind your app, such as a Next.js route or an Express API.
 
 Example with a React app that uses an Express backend:
 
@@ -66,7 +107,13 @@ hookkit inspect
 ```
 
 The inspector listens on `127.0.0.1` by default. If you bind it to a public
-host, basic auth is required.
+host, basic auth is required. Each captured request shows a live signature
+badge and a schema-drift badge (does the real payload still match the schema
+HookKit knows for that event?). Click "Save as fixture" — or run
+`hookkit fixtures save-from-inspector <requestId> --provider <p> --event <e>`
+— to turn a real captured event into a fixture you can replay in CI; a new
+API-version variant of an event HookKit already knows works immediately,
+with zero code changes.
 
 ## Receive real provider events locally
 
@@ -84,10 +131,15 @@ See [docs/listen.md](docs/listen.md) for the full flow.
 - `@hookkit-dev/sdk` for tests and matchers
 - `@hookkit-dev/cli` for command-line workflows
 - `@hookkit-dev/inspector` for the local UI and capture server
-- `@hookkit-dev/adapter-*` for framework integration
-- `@hookkit-dev/core` for signing, generation, and dispatching
+- `@hookkit-dev/adapter-*` for framework integration and production verify middleware
+- `@hookkit-dev/idempotency-redis` / `@hookkit-dev/idempotency-postgres` for
+  production idempotency stores (an in-memory one ships in core)
+- `@hookkit-dev/core` for signing, generation, dispatching, and schema-drift detection
 - `@hookkit-dev/fixtures` for synthetic payloads
 - `@hookkit-dev/relay` for the optional self-hosted relay
+
+See [docs/roadmap.md](docs/roadmap.md) for what's next (more frameworks,
+typed payloads, an MCP server, distribution tooling, more providers).
 
 ## Publishing
 
