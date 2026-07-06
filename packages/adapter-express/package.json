@@ -1,6 +1,6 @@
 {
 	"name": "@hookkit-dev/adapter-express",
-	"version": "0.0.3",
+	"version": "0.1.0",
 	"description": "Express adapter for HookKit: raw-body capture middleware + network-free delivery target",
 	"license": "MIT",
 	"repository": {

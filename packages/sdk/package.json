@@ -1,6 +1,6 @@
 {
 	"name": "@hookkit-dev/sdk",
-	"version": "0.0.3",
+	"version": "0.1.0",
 	"description": "Test-native SDK for HookKit: provider builders, delivery, and test matchers",
 	"license": "MIT",
 	"repository": {

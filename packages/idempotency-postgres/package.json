@@ -1,6 +1,6 @@
 {
 	"name": "@hookkit-dev/idempotency-postgres",
-	"version": "0.0.3",
+	"version": "0.1.0",
 	"description": "Postgres-backed IdempotencyStore for HookKit production verify middleware",
 	"license": "MIT",
 	"repository": {
