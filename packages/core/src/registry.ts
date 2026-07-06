@@ -1,3 +1,4 @@
+import { discord } from "./adapters/discord.js";
 import { github } from "./adapters/github.js";
 import { shopify } from "./adapters/shopify.js";
 import { slack } from "./adapters/slack.js";
@@ -40,3 +41,4 @@ registry.register(github);
 registry.register(shopify);
 registry.register(slack);
 registry.register(standardWebhooks);
+registry.register(discord);

@@ -1,3 +1,4 @@
+export { discord } from "./adapters/discord.js";
 export { github } from "./adapters/github.js";
 export { shopify } from "./adapters/shopify.js";
 export { slack } from "./adapters/slack.js";

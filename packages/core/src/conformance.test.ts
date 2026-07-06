@@ -7,6 +7,7 @@ const EXPECTED_PROVIDERS = [
 	"shopify",
 	"slack",
 	"standard-webhooks",
+	"discord",
 ];
 
 it("registry ships all expected providers", () => {

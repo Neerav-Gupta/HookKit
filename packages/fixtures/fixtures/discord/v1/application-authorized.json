@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "application_id": "123456789012345678",
+  "type": 1,
+  "event": {
+    "type": "APPLICATION_AUTHORIZED",
+    "timestamp": "2025-04-10T12:00:00.000000+00:00",
+    "data": {
+      "integration_type": 0,
+      "user": {
+        "id": "234567890123456789",
+        "username": "synthetic-test-user",
+        "discriminator": "0"
+      },
+      "scopes": ["applications.commands", "bot"],
+      "guild": {
+        "id": "345678901234567890",
+        "name": "Synthetic Test Guild"
+      }
+    }
+  }
+}

@@ -43,5 +43,8 @@
 	},
 	"standard-webhooks/customer.created": {
 		"v1": "fixtures/standard-webhooks/v1/customer-created.json"
+	},
+	"discord/application_authorized": {
+		"v1": "fixtures/discord/v1/application-authorized.json"
 	}
 }
