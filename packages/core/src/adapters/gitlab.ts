@@ -43,6 +43,15 @@ export const gitlab: ProviderAdapter = {
 		return { "X-Gitlab-Event": EVENT_HEADER_NAMES[eventType] ?? eventType };
 	},
 
+	identifyEvent({ headers }) {
+		const eventHeader = getHeader(headers, "X-Gitlab-Event");
+		if (!eventHeader) return undefined;
+		const entry = Object.entries(EVENT_HEADER_NAMES).find(
+			([, value]) => value === eventHeader,
+		);
+		return entry?.[0];
+	},
+
 	events: {
 		"push-hook": {
 			fixtureId: "gitlab/push-hook",

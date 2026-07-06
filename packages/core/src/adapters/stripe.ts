@@ -136,6 +136,10 @@ export const stripe: ProviderAdapter = {
 		return { valid: true };
 	},
 
+	identifyEvent({ parsedBody }) {
+		return (parsedBody as { type?: string } | null)?.type;
+	},
+
 	events: {
 		"checkout.session.completed": {
 			fixtureId: "stripe/checkout.session.completed",

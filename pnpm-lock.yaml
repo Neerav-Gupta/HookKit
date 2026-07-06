@@ -154,6 +154,9 @@ importers:
       '@hookkit-dev/fixtures':
         specifier: workspace:*
         version: link:../fixtures
+      ajv:
+        specifier: ^8.20.0
+        version: 8.20.0
     devDependencies:
       '@octokit/webhooks-methods':
         specifier: ^6.0.0
@@ -164,9 +167,6 @@ importers:
       '@slack/bolt':
         specifier: ^4.7.3
         version: 4.7.3(@types/express@5.0.6)
-      ajv:
-        specifier: ^8.20.0
-        version: 8.20.0
       discord-interactions:
         specifier: ^4.4.0
         version: 4.4.0

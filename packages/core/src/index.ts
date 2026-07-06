@@ -25,6 +25,8 @@ export {
 } from "./idempotency.js";
 export { deepMerge, setPath } from "./merge.js";
 export { ProviderRegistry, registry } from "./registry.js";
+export type { SchemaDriftResult } from "./schema-drift.js";
+export { detectSchemaDrift } from "./schema-drift.js";
 export {
 	corruptSignature,
 	DEFAULT_TOLERANCE_SEC,

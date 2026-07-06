@@ -52,6 +52,10 @@ export const shopify: ProviderAdapter = {
 		};
 	},
 
+	identifyEvent({ headers }) {
+		return getHeader(headers, "X-Shopify-Topic");
+	},
+
 	events: {
 		"orders/create": {
 			fixtureId: "shopify/orders/create",

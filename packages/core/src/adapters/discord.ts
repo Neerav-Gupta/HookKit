@@ -99,6 +99,12 @@ export const discord: ProviderAdapter = {
 		}
 	},
 
+	identifyEvent({ parsedBody }) {
+		const eventType = (parsedBody as { event?: { type?: string } } | null)
+			?.event?.type;
+		return eventType?.toLowerCase();
+	},
+
 	events: {
 		application_authorized: {
 			fixtureId: "discord/application_authorized",

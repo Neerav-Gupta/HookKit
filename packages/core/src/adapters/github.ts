@@ -84,6 +84,10 @@ export const github: ProviderAdapter = {
 		};
 	},
 
+	identifyEvent({ headers }) {
+		return getHeader(headers, "X-GitHub-Event");
+	},
+
 	events: {
 		push: {
 			fixtureId: "github/push",

@@ -153,6 +153,10 @@ export const standardWebhooks: ProviderAdapter = {
 		return { valid: true };
 	},
 
+	identifyEvent({ parsedBody }) {
+		return (parsedBody as { type?: string } | null)?.type;
+	},
+
 	events: {
 		"invoice.paid": {
 			fixtureId: "standard-webhooks/invoice.paid",

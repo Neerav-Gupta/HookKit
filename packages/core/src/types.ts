@@ -56,6 +56,18 @@ export interface ProviderAdapter {
 		apiVersion?: string;
 	}): Record<string, string>;
 
+	/**
+	 * OPTIONAL: given a received (verified) request's headers and parsed body,
+	 * identify which of this adapter's `events` keys it is — used for runtime
+	 * schema-drift detection (does a real captured payload still match the
+	 * schema HookKit knows for that event?). Return `undefined` when the event
+	 * type can't be determined (e.g. a ping/non-event payload).
+	 */
+	identifyEvent?(input: {
+		headers: Record<string, string>;
+		parsedBody: unknown;
+	}): string | undefined;
+
 	events: Record<string, EventDescriptor>;
 	retryPolicy: RetrySchedule;
 }

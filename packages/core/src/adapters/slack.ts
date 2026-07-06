@@ -117,6 +117,10 @@ export const slack: ProviderAdapter = {
 		return { valid: true };
 	},
 
+	identifyEvent({ parsedBody }) {
+		return (parsedBody as { event?: { type?: string } } | null)?.event?.type;
+	},
+
 	events: {
 		app_mention: {
 			fixtureId: "slack/app_mention",

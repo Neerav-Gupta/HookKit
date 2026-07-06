@@ -38,13 +38,13 @@
 		"test": "vitest run"
 	},
 	"dependencies": {
-		"@hookkit-dev/fixtures": "workspace:*"
+		"@hookkit-dev/fixtures": "workspace:*",
+		"ajv": "^8.20.0"
 	},
 	"devDependencies": {
 		"@octokit/webhooks-methods": "^6.0.0",
 		"@shopify/shopify-api": "^13.1.0",
 		"@slack/bolt": "^4.7.3",
-		"ajv": "^8.20.0",
 		"discord-interactions": "^4.4.0",
 		"standardwebhooks": "^1.0.0",
 		"stripe": "^18.0.0"
