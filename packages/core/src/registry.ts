@@ -1,5 +1,6 @@
 import { discord } from "./adapters/discord.js";
 import { github } from "./adapters/github.js";
+import { gitlab } from "./adapters/gitlab.js";
 import { shopify } from "./adapters/shopify.js";
 import { slack } from "./adapters/slack.js";
 import { standardWebhooks } from "./adapters/standard-webhooks.js";
@@ -42,3 +43,4 @@ registry.register(shopify);
 registry.register(slack);
 registry.register(standardWebhooks);
 registry.register(discord);
+registry.register(gitlab);

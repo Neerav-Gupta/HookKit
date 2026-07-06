@@ -8,6 +8,7 @@ const EXPECTED_PROVIDERS = [
 	"slack",
 	"standard-webhooks",
 	"discord",
+	"gitlab",
 ];
 
 it("registry ships all expected providers", () => {

@@ -4,6 +4,17 @@ export interface ProviderAdapter {
 	contentType: string; // 'application/json'
 	signatureHeader: string; // 'Stripe-Signature'
 
+	/**
+	 * Set to `false` ONLY for schemes that don't cryptographically bind the
+	 * signature/token to the request body at all (e.g. GitLab's static
+	 * shared-secret token — a real, documented, weaker-than-HMAC design, not a
+	 * bug). Defaults to `true`. The conformance suite's tampered-body check is
+	 * skipped when this is `false`, so this must be an explicit, deliberate
+	 * declaration — never a silent workaround for an adapter that forgot to
+	 * check `rawBody`.
+	 */
+	verifiesBody?: boolean;
+
 	/** Compute the headers a real provider attaches to this exact raw body. */
 	sign(input: {
 		rawBody: Buffer;

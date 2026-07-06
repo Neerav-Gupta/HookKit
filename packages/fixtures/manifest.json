@@ -46,5 +46,8 @@
 	},
 	"discord/application_authorized": {
 		"v1": "fixtures/discord/v1/application-authorized.json"
+	},
+	"gitlab/push-hook": {
+		"v4": "fixtures/gitlab/v4/push-hook.json"
 	}
 }

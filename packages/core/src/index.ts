@@ -1,5 +1,6 @@
 export { discord } from "./adapters/discord.js";
 export { github } from "./adapters/github.js";
+export { gitlab } from "./adapters/gitlab.js";
 export { shopify } from "./adapters/shopify.js";
 export { slack } from "./adapters/slack.js";
 export { standardWebhooks } from "./adapters/standard-webhooks.js";

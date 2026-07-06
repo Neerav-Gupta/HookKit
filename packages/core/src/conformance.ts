@@ -135,8 +135,9 @@ export function conformanceChecks(
 
 	checks.push(
 		{
-			name: "rejects a tampered body",
+			name: "rejects a tampered body (unless the scheme declares verifiesBody: false)",
 			run: () => {
+				if (adapter.verifiesBody === false) return;
 				assert.ok(firstEvent, "adapter declares at least one event");
 				const evt = generate(adapter.id, firstEvent, {
 					secret,

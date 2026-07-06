@@ -1,0 +1,30 @@
+{
+  "object_kind": "push",
+  "event_name": "push",
+  "before": "0000000000000000000000000000000000000000",
+  "after": "1111111111111111111111111111111111111111",
+  "ref": "refs/heads/main",
+  "checkout_sha": "1111111111111111111111111111111111111111",
+  "user_id": 100000001,
+  "user_name": "Synthetic Test User",
+  "user_username": "synthetic-test-user",
+  "project_id": 200000001,
+  "project": {
+    "id": 200000001,
+    "name": "demo-repo",
+    "path_with_namespace": "synthetic-test-group/demo-repo",
+    "default_branch": "main"
+  },
+  "commits": [
+    {
+      "id": "1111111111111111111111111111111111111111",
+      "message": "test: synthetic commit",
+      "timestamp": "2025-04-10T12:00:00+00:00",
+      "author": {
+        "name": "Synthetic Test User",
+        "email": "synthetic-test-user@example.com"
+      }
+    }
+  ],
+  "total_commits_count": 1
+}
