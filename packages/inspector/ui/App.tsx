@@ -7,6 +7,13 @@ interface Endpoint {
 	created_at: number;
 }
 
+interface SchemaDriftResult {
+	checked: boolean;
+	matched?: boolean;
+	eventType?: string;
+	errors?: string[];
+}
+
 interface CapturedRequest {
 	id: string;
 	endpoint_id: string;
@@ -20,6 +27,7 @@ interface CapturedRequest {
 	body_preview: string;
 	body?: string;
 	replays?: Replay[];
+	schema_drift?: SchemaDriftResult;
 }
 
 interface Replay {
@@ -44,6 +52,22 @@ function SignatureBadge({ status }: { status: string }) {
 			title="Signature status (set HOOKKIT_<PROVIDER>_SECRET to verify live)"
 		>
 			{status}
+		</span>
+	);
+}
+
+function SchemaDriftBadge({ drift }: { drift: SchemaDriftResult | undefined }) {
+	if (!drift?.checked) return null;
+	const style = drift.matched
+		? "bg-emerald-100 text-emerald-800 border-emerald-300"
+		: "bg-amber-100 text-amber-800 border-amber-300";
+	return (
+		<span
+			className={`inline-block rounded border px-1.5 py-0.5 text-xs font-medium ${style}`}
+			title={drift.matched ? undefined : (drift.errors ?? []).join("; ")}
+		>
+			schema: {drift.matched ? "OK" : "drift detected"}
+			{drift.eventType ? ` (${drift.eventType})` : ""}
 		</span>
 	);
 }
@@ -240,6 +264,7 @@ export function App() {
 							<div className="flex items-center gap-3">
 								<h2 className="font-mono text-sm">{selected.id}</h2>
 								<SignatureBadge status={selected.signature_status} />
+								<SchemaDriftBadge drift={selected.schema_drift} />
 								{selected.provider_guess && (
 									<span className="rounded bg-slate-200 px-1.5 py-0.5 text-xs">
 										{selected.provider_guess}

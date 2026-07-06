@@ -129,6 +129,34 @@ describe("hookkit verify", () => {
 		expect(result.exitCode).toBe(1);
 		expect(result.output.join("\n")).toContain("invalid");
 	});
+
+	it("warns (non-fatally) when a valid payload has drifted from the known schema", async () => {
+		const { registry } = await import("@hookkit-dev/core");
+		const malformed = Buffer.from(
+			JSON.stringify({
+				id: "evt_test_0000000000",
+				object: "event",
+				api_version: "2025-04-10",
+				created: 1710000000,
+				type: "checkout.session.completed",
+				data: { object: { object: "checkout.session" } }, // missing required id/status
+			}),
+		);
+		const dir = mkdtempSync(join(tmpdir(), "hookkit-verify-drift-"));
+		const bodyFile = join(dir, "body.json");
+		writeFileSync(bodyFile, malformed);
+		const signatureHeader = registry
+			.get("stripe")
+			.sign({ rawBody: malformed, secret })["Stripe-Signature"];
+		const result = await verify("stripe", {
+			body: `@${bodyFile}`,
+			header: [`Stripe-Signature: ${signatureHeader}`],
+			secret,
+		});
+		expect(result.exitCode).toBe(0); // schema drift never fails verify
+		expect(result.output[0]).toBe("valid ✓");
+		expect(result.output.join("\n")).toContain("schema drift");
+	});
 });
 
 describe("hookkit replay", () => {

@@ -4,7 +4,13 @@
  * user explicitly passes (typically loopback). Secrets are never printed.
  */
 import { readFileSync } from "node:fs";
-import { dispatch, generate, registry, setPath } from "@hookkit-dev/core";
+import {
+	detectSchemaDrift,
+	dispatch,
+	generate,
+	registry,
+	setPath,
+} from "@hookkit-dev/core";
 import { loadConfig, resolveSecret, resolveTarget } from "./config.js";
 
 export interface CommandResult {
@@ -228,7 +234,23 @@ export async function verify(
 			? { toleranceSec: options.tolerance }
 			: {}),
 	});
-	return result.valid
-		? { exitCode: 0, output: ["valid ✓"] }
-		: { exitCode: 1, output: [`invalid ✗  (${result.reason})`] };
+	if (!result.valid) {
+		return { exitCode: 1, output: [`invalid ✗  (${result.reason})`] };
+	}
+
+	const output = ["valid ✓"];
+	// Non-fatal: a schema-drift warning never changes verify's exit code.
+	try {
+		const parsedBody: unknown = JSON.parse(rawBody.toString("utf8"));
+		const drift = detectSchemaDrift(provider, { headers, parsedBody });
+		if (drift.checked && !drift.matched) {
+			output.push(
+				`⚠ schema drift: payload for "${drift.eventType}" no longer matches the known schema` +
+					` (possible API version change) — ${(drift.errors ?? []).join("; ")}`,
+			);
+		}
+	} catch {
+		// Non-JSON body: schema-drift detection doesn't apply, nothing to warn about.
+	}
+	return { exitCode: 0, output };
 }

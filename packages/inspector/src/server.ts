@@ -8,7 +8,7 @@ import { existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { type ServerType, serve } from "@hono/node-server";
-import { dispatch, registry } from "@hookkit-dev/core";
+import { detectSchemaDrift, dispatch, registry } from "@hookkit-dev/core";
 import { Hono } from "hono";
 import { basicAuth } from "hono/basic-auth";
 import { streamSSE } from "hono/streaming";
@@ -45,6 +45,27 @@ export interface CaptureEvent {
 function toWire(row: RequestRow): CaptureEvent["request"] {
 	const { body_blob, ...rest } = row;
 	return { ...rest, body_preview: body_blob.toString("utf8").slice(0, 2048) };
+}
+
+/**
+ * Computed live on read (no SQLite migration — keeps the §8 schema as-is):
+ * does this captured request still match the JSON Schema HookKit knows for
+ * its event type? `undefined` when the provider is unknown or the body isn't
+ * JSON — not every capture is drift-checkable.
+ */
+function computeSchemaDrift(
+	row: RequestRow,
+): ReturnType<typeof detectSchemaDrift> | undefined {
+	if (!row.provider_guess || !registry.has(row.provider_guess))
+		return undefined;
+	let parsedBody: unknown;
+	try {
+		parsedBody = JSON.parse(row.body_blob.toString("utf8"));
+	} catch {
+		return undefined;
+	}
+	const headers = JSON.parse(row.headers_json) as Record<string, string>;
+	return detectSchemaDrift(row.provider_guess, { headers, parsedBody });
 }
 
 export function createInspectorApp(options: InspectorOptions = {}): {
@@ -140,6 +161,7 @@ export function createInspectorApp(options: InspectorOptions = {}): {
 			body: row.body_blob.toString("utf8"),
 			body_base64: row.body_blob.toString("base64"),
 			replays: db.listReplays(row.id),
+			schema_drift: computeSchemaDrift(row),
 		});
 	});
 
